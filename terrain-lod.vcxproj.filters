@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\Skybox.cpp">
+    <ClCompile Include="src\TerrainLOD.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="src\glad.c">
@@ -24,10 +24,21 @@
     <ClCompile Include="src\image_importer.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="local_libs\lib\VBO.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="local_libs\lib\EBO.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="local_libs\lib\VAO.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
+    <None Include="shaders\terrain.frag" />
+    <None Include="shaders\terrain.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\skybox\back.jpg">
@@ -48,5 +59,25 @@
     <Image Include="resources\textures\skybox\top.jpg">
       <Filter>File di risorse</Filter>
     </Image>
+    <Image Include="resources\textures\terrain.png">
+      <Filter>File di risorse</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="local_libs\include\Skybox.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\VBO.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\EBO.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\VAO.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\WindowIO.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
