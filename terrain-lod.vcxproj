@@ -132,9 +132,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="local_libs\lib\Cubemap.cpp" />
     <ClCompile Include="local_libs\lib\EBO.cpp" />
+    <ClCompile Include="local_libs\lib\Skybox.cpp" />
     <ClCompile Include="local_libs\lib\VAO.cpp" />
     <ClCompile Include="local_libs\lib\VBO.cpp" />
+    <ClCompile Include="local_libs\lib\Texture.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\image_importer.cpp" />
     <ClCompile Include="src\TerrainLOD.cpp" />
@@ -142,8 +145,8 @@
   <ItemGroup>
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
-    <None Include="shaders\terrain.frag" />
-    <None Include="shaders\terrain.vert" />
+    <None Include="shaders\shader.fs" />
+    <None Include="shaders\shader.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\skybox\back.jpg" />
@@ -155,11 +158,13 @@
     <Image Include="resources\textures\terrain.png" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="local_libs\include\Cubemap.h" />
     <ClInclude Include="local_libs\include\EBO.h" />
     <ClInclude Include="local_libs\include\Skybox.h" />
     <ClInclude Include="local_libs\include\VAO.h" />
     <ClInclude Include="local_libs\include\VBO.h" />
     <ClInclude Include="local_libs\include\WindowIO.h" />
+    <ClInclude Include="local_libs\include\Texture.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

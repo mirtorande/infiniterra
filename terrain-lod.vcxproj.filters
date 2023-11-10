@@ -33,12 +33,21 @@
     <ClCompile Include="local_libs\lib\VAO.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
+    <ClCompile Include="local_libs\lib\Texture.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="local_libs\lib\Cubemap.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="local_libs\lib\Skybox.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
-    <None Include="shaders\terrain.frag" />
-    <None Include="shaders\terrain.vert" />
+    <None Include="shaders\shader.fs" />
+    <None Include="shaders\shader.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\skybox\back.jpg">
@@ -77,6 +86,12 @@
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="local_libs\include\WindowIO.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\Texture.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\Cubemap.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
