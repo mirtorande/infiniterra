@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\OpenGL_Libraries\include;C:\Users\mirto\Desktop\terrain-lod\local_libs\include;$(IncludePath)</IncludePath>
-    <LibraryPath>C:\OpenGL_Libraries\libs;C:\Users\mirto\Desktop\terrain-lod\local_libs\libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\local_libs\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\local_libs\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -132,21 +132,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="local_libs\lib\Cubemap.cpp" />
-    <ClCompile Include="local_libs\lib\EBO.cpp" />
-    <ClCompile Include="local_libs\lib\Skybox.cpp" />
-    <ClCompile Include="local_libs\lib\VAO.cpp" />
-    <ClCompile Include="local_libs\lib\VBO.cpp" />
-    <ClCompile Include="local_libs\lib\Texture.cpp" />
+    <ClCompile Include="local_libs\libs\cubemap.cpp" />
+    <ClCompile Include="local_libs\libs\EBO.cpp" />
+    <ClCompile Include="local_libs\libs\skybox.cpp" />
+    <ClCompile Include="local_libs\libs\terrain.cpp" />
+    <ClCompile Include="local_libs\libs\VAO.cpp" />
+    <ClCompile Include="local_libs\libs\VBO.cpp" />
+    <ClCompile Include="local_libs\libs\texture.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\image_importer.cpp" />
-    <ClCompile Include="src\TerrainLOD.cpp" />
+    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="local_libs\libs\assimp-vc143-mtd.dll" />
+    <None Include="local_libs\libs\assimp-vc143-mtd.exp" />
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
-    <None Include="shaders\shader.fs" />
-    <None Include="shaders\shader.vs" />
+    <None Include="shaders\terrain.fs" />
+    <None Include="shaders\terrain.vs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\skybox\back.jpg" />
@@ -158,13 +161,24 @@
     <Image Include="resources\textures\terrain.png" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="local_libs\include\Cubemap.h" />
+    <ClInclude Include="local_libs\include\camera.h" />
+    <ClInclude Include="local_libs\include\cubemap.h" />
     <ClInclude Include="local_libs\include\EBO.h" />
-    <ClInclude Include="local_libs\include\Skybox.h" />
+    <ClInclude Include="local_libs\include\KHR\khrplatform.h" />
+    <ClInclude Include="local_libs\include\mesh.h" />
+    <ClInclude Include="local_libs\include\model.h" />
+    <ClInclude Include="local_libs\include\shader.h" />
+    <ClInclude Include="local_libs\include\skybox.h" />
+    <ClInclude Include="local_libs\include\stb_image.h" />
+    <ClInclude Include="local_libs\include\terrain.h" />
     <ClInclude Include="local_libs\include\VAO.h" />
     <ClInclude Include="local_libs\include\VBO.h" />
-    <ClInclude Include="local_libs\include\WindowIO.h" />
-    <ClInclude Include="local_libs\include\Texture.h" />
+    <ClInclude Include="local_libs\include\window_io.h" />
+    <ClInclude Include="local_libs\include\texture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="local_libs\libs\assimp-vc143-mtd.lib" />
+    <Library Include="local_libs\libs\glfw3.lib" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

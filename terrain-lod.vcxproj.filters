@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\TerrainLOD.cpp">
+    <ClCompile Include="src\main.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="src\glad.c">
@@ -24,30 +24,35 @@
     <ClCompile Include="src\image_importer.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="local_libs\lib\VBO.cpp">
+    <ClCompile Include="local_libs\libs\VBO.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="local_libs\lib\EBO.cpp">
+    <ClCompile Include="local_libs\libs\EBO.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="local_libs\lib\VAO.cpp">
+    <ClCompile Include="local_libs\libs\VAO.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="local_libs\lib\Texture.cpp">
+    <ClCompile Include="local_libs\libs\texture.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="local_libs\lib\Cubemap.cpp">
+    <ClCompile Include="local_libs\libs\cubemap.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
-    <ClCompile Include="local_libs\lib\Skybox.cpp">
+    <ClCompile Include="local_libs\libs\skybox.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="local_libs\libs\terrain.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
-    <None Include="shaders\shader.fs" />
-    <None Include="shaders\shader.vs" />
+    <None Include="shaders\terrain.fs" />
+    <None Include="shaders\terrain.vs" />
+    <None Include="local_libs\libs\assimp-vc143-mtd.dll" />
+    <None Include="local_libs\libs\assimp-vc143-mtd.exp" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\skybox\back.jpg">
@@ -73,7 +78,7 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="local_libs\include\Skybox.h">
+    <ClInclude Include="local_libs\include\skybox.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
     <ClInclude Include="local_libs\include\VBO.h">
@@ -85,14 +90,39 @@
     <ClInclude Include="local_libs\include\VAO.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="local_libs\include\WindowIO.h">
+    <ClInclude Include="local_libs\include\window_io.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="local_libs\include\Texture.h">
+    <ClInclude Include="local_libs\include\texture.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
-    <ClInclude Include="local_libs\include\Cubemap.h">
+    <ClInclude Include="local_libs\include\cubemap.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="local_libs\include\camera.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\stb_image.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\shader.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\model.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\KHR\khrplatform.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\mesh.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\terrain.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="local_libs\libs\assimp-vc143-mtd.lib" />
+    <Library Include="local_libs\libs\glfw3.lib" />
   </ItemGroup>
 </Project>

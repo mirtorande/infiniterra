@@ -3,8 +3,8 @@
 
 #include <vector>
 #include <string>
-#include "Shader.h"
-#include "Cubemap.h"
+#include "shader.h"
+#include "cubemap.h"
 #include "VAO.h"
 
 class Skybox {
