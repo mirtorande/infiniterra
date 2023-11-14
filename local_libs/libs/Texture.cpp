@@ -12,8 +12,10 @@ void Texture::loadTexture(const std::string& filePath) {
     glGenTextures(1, &textureID);
 
     int width, height, channels;
-    stbi_set_flip_vertically_on_load(true);
+    //stbi_set_flip_vertically_on_load(true);
     unsigned char* data = stbi_load(filePath.c_str(), &width, &height, &channels, 0);
+    //stbi_set_flip_vertically_on_load(false);
+
 
     if (data) {
         GLenum format = (channels == 3) ? GL_RGB : GL_RGBA;
@@ -38,6 +40,7 @@ void Texture::loadTexture(const std::string& filePath) {
 }
 
 void Texture::bindTexture() {
+    std::cout << textureID << std::endl;
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
 

@@ -71,8 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>$(ProjectDir)\local_libs\include;$(IncludePath)</IncludePath>
-    <LibraryPath>$(ProjectDir)\local_libs\libs;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)\local_libs\include\imgui;$(ProjectDir)\local_libs\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\local_libs\libs\imgui;$(ProjectDir)\local_libs\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -158,6 +158,7 @@
     <Image Include="resources\textures\skybox\left.jpg" />
     <Image Include="resources\textures\skybox\right.jpg" />
     <Image Include="resources\textures\skybox\top.jpg" />
+    <Image Include="resources\textures\terrain-small.png" />
     <Image Include="resources\textures\terrain.png" />
   </ItemGroup>
   <ItemGroup>

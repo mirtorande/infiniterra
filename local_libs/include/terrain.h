@@ -19,8 +19,9 @@ private:
     std::vector<float> vertices;
     std::vector<GLuint> indices;
     VAO terrainVAO;
-    VBO terrainVBO;
-    EBO terrainEBO;
+    //VBO terrainVBO;
+    //EBO terrainEBO;
+    Texture terrainTexture;
     Shader terrainShader;
     float getHeightFromImage(const unsigned char* data, int width, int x, int y);
     void generateTerrain(std::vector<float>& vertices, std::vector<GLuint>& indices, const unsigned char* data, int width, int height, float scale);

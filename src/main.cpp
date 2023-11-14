@@ -22,6 +22,7 @@
 int main()
 {
     GLFWwindow* window = initializeWindow();
+    
 
     glEnable(GL_DEPTH_TEST);
     glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
