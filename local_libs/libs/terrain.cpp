@@ -19,7 +19,7 @@ Terrain::Terrain() : terrainShader("shaders/terrain.vs", "shaders/terrain.fs") {
     terrainVAO.LinkVBO(terrainVBO, 0);
     terrainVAO.Unbind();
 
-    terrainTexture.loadTexture("resources/textures/grass.png");
+    terrainTexture.loadTexture("resources/textures/grass.tif");
 
     terrainTexture.bindTexture();
     terrainShader.use();
