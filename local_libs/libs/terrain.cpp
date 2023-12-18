@@ -1,6 +1,6 @@
 #include "terrain.h"
 
-Terrain::Terrain() : terrainShader("shaders/terrain.vs", "shaders/terrain.fs") {
+Terrain::Terrain() : terrainShader("shaders/terrain.vs", "shaders/terrain.fs", "shaders/terrain.tcs", "shaders/terrain.tes") {
     unsigned char* heightmapData = stbi_load("resources/textures/terrain.png", &width, &height, &channels, 0);
 
     // Check if data loading was successful
@@ -8,22 +8,23 @@ Terrain::Terrain() : terrainShader("shaders/terrain.vs", "shaders/terrain.fs") {
         exit(1);
     
     // Generate terrain vertices
-    generateTerrain(vertices, indices, heightmapData, width, height, 0.2f);
+    generateTerrain(vertices, heightmapData, width, height, 0.2f);
 
     // Free the heightmap data
     stbi_image_free(heightmapData);
 
     terrainVAO.Bind();
     VBO terrainVBO = VBO(vertices.data(), vertices.size() * sizeof(float));
-    EBO terrainEBO = EBO(indices.data(), indices.size() * sizeof(int));
-    terrainVAO.LinkVBO(terrainVBO, 0);
+    terrainVAO.LinkVBO(terrainVBO, 0, 3, 5);
     terrainVAO.Unbind();
 
-    terrainTexture.loadTexture("resources/textures/grass.tif");
+    //terrainTexture.loadTexture("resources/textures/grass.tif"); NON CARICA
 
-    terrainTexture.bindTexture();
+    //terrainTexture.bindTexture();
     terrainShader.use();
     terrainShader.setInt("terrainTexture", 0);
+
+    glPatchParameteri(GL_PATCH_VERTICES, 4);
 }
 
 Terrain::~Terrain() {
@@ -36,7 +37,7 @@ void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::m
     terrainShader.setMat4("view", view);
     terrainShader.setMat4("projection", projection);
     terrainVAO.Bind();
-    glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_PATCHES, 0, 4 * rez * rez);
     terrainVAO.Unbind();
 }
 
@@ -44,41 +45,35 @@ float Terrain::getHeightFromImage(const unsigned char* data, int width, int x, i
     return static_cast<float>(data[y * width + x]) / 25.0f;
 }
 
-void Terrain::generateTerrain(std::vector<float>& vertices, std::vector<GLuint>& indices, const unsigned char* data, int width, int height, float scale) {
-    for (int y = 0; y < height; y++) {
-        for (int x = 0; x < width; x++) {
-            float xPos = static_cast<float>(x) * scale;
-            float yPos = getHeightFromImage(data, width, x, y) * scale;
-            float zPos = static_cast<float>(y) * scale;
+void Terrain::generateTerrain(std::vector<float>& vertices, const unsigned char* data, int width, int height, float scale) {
+    rez = 20;
+    for (unsigned i = 0; i <= rez - 1; i++)
+    {
+        for (unsigned j = 0; j <= rez - 1; j++)
+        {
+            vertices.push_back(-width / 2.0f + width * i / (float)rez); // v.x
+            vertices.push_back(0.0f); // v.y
+            vertices.push_back(-height / 2.0f + height * j / (float)rez); // v.z
+            vertices.push_back(i / (float)rez); // u
+            vertices.push_back(j / (float)rez); // v
 
-            vertices.push_back(xPos);
-            vertices.push_back(yPos);
-            vertices.push_back(zPos);
+            vertices.push_back(-width / 2.0f + width * (i + 1) / (float)rez); // v.x
+            vertices.push_back(0.0f); // v.y
+            vertices.push_back(-height / 2.0f + height * j / (float)rez); // v.z
+            vertices.push_back((i + 1) / (float)rez); // u
+            vertices.push_back(j / (float)rez); // v
+
+            vertices.push_back(-width / 2.0f + width * i / (float)rez); // v.x
+            vertices.push_back(0.0f); // v.y
+            vertices.push_back(-height / 2.0f + height * (j + 1) / (float)rez); // v.z
+            vertices.push_back(i / (float)rez); // u
+            vertices.push_back((j + 1) / (float)rez); // v
+
+            vertices.push_back(-width / 2.0f + width * (i + 1) / (float)rez); // v.x
+            vertices.push_back(0.0f); // v.y
+            vertices.push_back(-height / 2.0f + height * (j + 1) / (float)rez); // v.z
+            vertices.push_back((i + 1) / (float)rez); // u
+            vertices.push_back((j + 1) / (float)rez); // v
         }
     }
-
-    for (int y = 0; y < height - 1; y++) {
-        for (int x = 0; x < width - 1; x++) {
-            unsigned int topLeft = (y + 1) * width + x;
-            unsigned int topRight = topLeft + 1;
-            unsigned int bottomLeft = y * width + x;
-            unsigned int bottomRight = bottomLeft + 1;
-
-            indices.push_back(topLeft);
-            indices.push_back(bottomLeft);
-            indices.push_back(topRight);
-
-            indices.push_back(topRight);
-            indices.push_back(bottomLeft);
-            indices.push_back(bottomRight);
-        }
-    }
-
-    /*DEBUG
-    int count = 0;
-    for (auto it = indices.begin(); it != indices.end() && count < 256; ++it, ++count) {
-        std::cout << *it << ": " << vertices[3 * (*it)] << ", " << vertices[3 * (*it) + 2] << std::endl;
-    }
-
-    std::cout << std::endl;*/
 }

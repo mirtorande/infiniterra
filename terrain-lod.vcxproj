@@ -149,9 +149,12 @@
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
     <None Include="shaders\terrain.fs" />
+    <None Include="shaders\terrain.tcs" />
+    <None Include="shaders\terrain.tes" />
     <None Include="shaders\terrain.vs" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="resources\textures\grass.tif" />
     <Image Include="resources\textures\skybox\back.jpg" />
     <Image Include="resources\textures\skybox\bottom.jpg" />
     <Image Include="resources\textures\skybox\front.jpg" />

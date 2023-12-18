@@ -15,19 +15,25 @@ public:
     unsigned int ID;
     // constructor generates the shader on the fly
     // ------------------------------------------------------------------------
-    Shader(const char* vertexPath, const char* fragmentPath, const char* geometryPath = nullptr)
+    Shader(const char* vertexPath, const char* fragmentPath, const char* tessContrPath = nullptr, const char* tessEvalPath = nullptr, const char* geometryPath = nullptr)
     {
         // 1. retrieve the vertex/fragment source code from filePath
         std::string vertexCode;
         std::string fragmentCode;
+        std::string tcsCode;
+        std::string tesCode;
         std::string geometryCode;
         std::ifstream vShaderFile;
         std::ifstream fShaderFile;
+        std::ifstream tcsShaderFile;
+        std::ifstream tesShaderFile;
         std::ifstream gShaderFile;
         // ensure ifstream objects can throw exceptions:
         vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         gShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        tcsShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+        tesShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
         try
         {
             // open files
@@ -43,6 +49,23 @@ public:
             // convert stream into string
             vertexCode = vShaderStream.str();
             fragmentCode = fShaderStream.str();
+            // Tessellation
+            if (tessContrPath != nullptr)
+            {
+                tcsShaderFile.open(tessContrPath);
+                std::stringstream tcsShaderStream;
+                tcsShaderStream << tcsShaderFile.rdbuf();
+                tcsShaderFile.close();
+                tcsCode = tcsShaderStream.str();
+            }
+            if (tessEvalPath != nullptr)
+            {
+                tesShaderFile.open(tessEvalPath);
+                std::stringstream tesShaderStream;
+                tesShaderStream << tesShaderFile.rdbuf();
+                tesShaderFile.close();
+                tesCode = tesShaderStream.str();
+            }
             // if geometry shader path is present, also load a geometry shader
             if (geometryPath != nullptr)
             {
@@ -71,6 +94,25 @@ public:
         glShaderSource(fragment, 1, &fShaderCode, NULL);
         glCompileShader(fragment);
         checkCompileErrors(fragment, "FRAGMENT");
+        // Compile tesselation shaders
+        unsigned int tessControl;
+        if (tessContrPath != nullptr)
+        {
+            const char* tcsShaderCode = tcsCode.c_str();
+            tessControl = glCreateShader(GL_TESS_CONTROL_SHADER);
+            glShaderSource(tessControl, 1, &tcsShaderCode, NULL);
+            glCompileShader(tessControl);
+            checkCompileErrors(tessControl, "TESS_CONTROL");
+        }
+        unsigned int tessEval;
+        if (tessEvalPath != nullptr)
+        {
+            const char* tesShaderCode = tesCode.c_str();
+            tessEval = glCreateShader(GL_TESS_EVALUATION_SHADER);
+            glShaderSource(tessEval, 1, &tesShaderCode, NULL);
+            glCompileShader(tessEval);
+            checkCompileErrors(tessEval, "TESS_EVALUATION");
+        }
         // if geometry shader is given, compile geometry shader
         unsigned int geometry;
         if (geometryPath != nullptr)
@@ -85,6 +127,10 @@ public:
         ID = glCreateProgram();
         glAttachShader(ID, vertex);
         glAttachShader(ID, fragment);
+        if (tessContrPath != nullptr)
+            glAttachShader(ID, tessControl);
+        if (tessEvalPath != nullptr)
+            glAttachShader(ID, tessEval);
         if (geometryPath != nullptr)
             glAttachShader(ID, geometry);
         glLinkProgram(ID);
@@ -92,6 +138,10 @@ public:
         // delete the shaders as they're linked into our program now and no longer necessary
         glDeleteShader(vertex);
         glDeleteShader(fragment);
+        if (tessContrPath != nullptr)
+            glDeleteShader(tessControl);
+        if (tessEvalPath != nullptr)
+            glDeleteShader(tessEval);
         if (geometryPath != nullptr)
             glDeleteShader(geometry);
 

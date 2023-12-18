@@ -53,6 +53,8 @@
     <None Include="shaders\terrain.vs" />
     <None Include="local_libs\libs\assimp-vc143-mtd.dll" />
     <None Include="local_libs\libs\assimp-vc143-mtd.exp" />
+    <None Include="shaders\terrain.tcs" />
+    <None Include="shaders\terrain.tes" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\skybox\back.jpg">
@@ -77,6 +79,9 @@
       <Filter>File di risorse</Filter>
     </Image>
     <Image Include="resources\textures\terrain-small.png">
+      <Filter>File di risorse</Filter>
+    </Image>
+    <Image Include="resources\textures\grass.tif">
       <Filter>File di risorse</Filter>
     </Image>
   </ItemGroup>
