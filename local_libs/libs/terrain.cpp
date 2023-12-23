@@ -18,11 +18,11 @@ Terrain::Terrain() : terrainShader("shaders/terrain.vs", "shaders/terrain.fs", "
     terrainVAO.LinkVBO(terrainVBO, 0, 3, 5);
     terrainVAO.Unbind();
 
-    //terrainTexture.loadTexture("resources/textures/grass.tif"); NON CARICA
+    terrainTexture.loadTexture("resources/textures/terrain.png");
 
-    //terrainTexture.bindTexture();
+    terrainTexture.bindTexture();
     terrainShader.use();
-    terrainShader.setInt("terrainTexture", 0);
+    terrainShader.setInt("heightMap", 0);
 
     glPatchParameteri(GL_PATCH_VERTICES, 4);
 }
