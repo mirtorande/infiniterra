@@ -1,10 +1,8 @@
-
-
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-//#define STB_IMAGE_IMPLEMENTATION
 #include "stb_image.h"
+#include "terrain_generation.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -104,7 +102,11 @@ int main()
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
     // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    unsigned char* data = stbi_load("resources/textures/iceland_heightmap.png", &width, &height, &nrChannels, 0);
+    //unsigned char* data = stbi_load("resources/textures/iceland_heightmap.png", &width, &height, &nrChannels, 0);
+    TerrainGenerator::GenerateTerrain(1024, 1024, 4);
+    unsigned char* data = stbi_load("resources/textures/generated_terrain.png", &width, &height, &nrChannels, 0);
+
+
     if (data)
     {
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
@@ -195,7 +197,7 @@ int main()
 
         // be sure to activate shader when setting uniforms/drawing objects
         tessHeightMapShader.use();
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100000.0f);
         glm::mat4 view = camera.GetViewMatrix();
