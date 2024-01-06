@@ -101,15 +101,13 @@ int main()
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
-    // The FileSystem::getPath(...) is part of the GitHub repository so we can find files on any IDE/platform; replace it with your own image path.
-    //unsigned char* data = stbi_load("resources/textures/iceland_heightmap.png", &width, &height, &nrChannels, 0);
-    TerrainGenerator::GenerateTerrain(1024, 1024, 4);
-    unsigned char* data = stbi_load("resources/textures/generated_terrain.png", &width, &height, &nrChannels, 0);
+    TerrainGenerator::GenerateTerrain(1024, 1024, 1);
+    unsigned char* data = stbi_load("resources/textures/terrain.png", &width, &height, &nrChannels, 0);
 
 
     if (data)
     {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
         glGenerateMipmap(GL_TEXTURE_2D);
 
         tessHeightMapShader.setInt("heightMap", 0);

@@ -13,9 +13,9 @@ void TerrainGenerator::GenerateTerrain(const int width, const int height, const 
         for (int x = 0; x < width; ++x) {
             // Calcoliamo un gradiente rosso e verde sull'immagine
             image[(y * width + x) * channels + 0] = static_cast<unsigned char>((x / (float)width) * 255); // Red
-            image[(y * width + x) * channels + 1] = static_cast<unsigned char>((x / (float)width) * 255);//static_cast<unsigned char>((y / (float)height) * 255); // Green
-            image[(y * width + x) * channels + 2] = static_cast<unsigned char>((x / (float)width) * 255); // Blue (zero)
-            image[(y * width + x) * channels + 3] = 255; // Alpha (non trasparente)
+            //image[(y * width + x) * channels + 1] = static_cast<unsigned char>((x / (float)width) * 255);//static_cast<unsigned char>((y / (float)height) * 255); // Green
+            //image[(y * width + x) * channels + 2] = static_cast<unsigned char>((x / (float)width) * 255); // Blue (zero)
+            //image[(y * width + x) * channels + 3] = 255; // Alpha (non trasparente)
         }
     }
 
