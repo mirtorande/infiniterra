@@ -102,7 +102,7 @@ int main()
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
     TerrainGenerator::GenerateTerrain(1024, 1024, 1);
-    unsigned char* data = stbi_load("resources/textures/terrain.png", &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load("resources/textures/blurred_terrain.png", &width, &height, &nrChannels, 0);
 
 
     if (data)
@@ -190,7 +190,7 @@ int main()
 
         // render
         // ------
-        glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+        glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         // be sure to activate shader when setting uniforms/drawing objects
@@ -242,6 +242,10 @@ void processInput(GLFWwindow* window)
         camera.ProcessKeyboard(LEFT, deltaTime);
     if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
         camera.ProcessKeyboard(RIGHT, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_E) == GLFW_PRESS)
+        camera.ProcessKeyboard(ASCEND, deltaTime);
+    if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS)
+        camera.ProcessKeyboard(DESCEND, deltaTime);
 }
 
 // glfw: whenever the window size changed (by OS or user resize) this callback function executes

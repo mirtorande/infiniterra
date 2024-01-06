@@ -170,6 +170,7 @@
     <ClInclude Include="local_libs\include\camera.h" />
     <ClInclude Include="local_libs\include\cubemap.h" />
     <ClInclude Include="local_libs\include\EBO.h" />
+    <ClInclude Include="local_libs\include\FastNoiseLite.h" />
     <ClInclude Include="local_libs\include\KHR\khrplatform.h" />
     <ClInclude Include="local_libs\include\mesh.h" />
     <ClInclude Include="local_libs\include\model.h" />
