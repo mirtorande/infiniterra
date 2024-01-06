@@ -102,7 +102,7 @@ int main()
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
     TerrainGenerator::GenerateTerrain(1024, 1024, 1);
-    unsigned char* data = stbi_load("resources/textures/blurred_terrain.png", &width, &height, &nrChannels, 0);
+    unsigned char* data = stbi_load("resources/textures/generated_terrain.png", &width, &height, &nrChannels, 0);
 
 
     if (data)
