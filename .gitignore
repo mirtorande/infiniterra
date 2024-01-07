@@ -402,4 +402,6 @@ FodyWeavers.xsd
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
+generated_terrain.png
+
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio
