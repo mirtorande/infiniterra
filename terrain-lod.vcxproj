@@ -154,6 +154,7 @@
     <None Include="shaders\terrain.tcs" />
     <None Include="shaders\terrain.tes" />
     <None Include="shaders\terrain.vs" />
+    <None Include="shaders\wireframe.fs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\grass.tif" />

@@ -86,6 +86,7 @@ int main()
     // build and compile our shader program
     // ------------------------------------
     Shader tessHeightMapShader("shaders/terrain.vs", "shaders/terrain.fs", "shaders/terrain.tcs", "shaders/terrain.tes");
+    Shader tessHeightMapWireShader("shaders/terrain.vs", "shaders/wireframe.fs", "shaders/terrain.tcs", "shaders/terrain.tes");
 
     // load and create a texture
     // -------------------------
@@ -111,6 +112,7 @@ int main()
         glGenerateMipmap(GL_TEXTURE_2D);
 
         tessHeightMapShader.setInt("heightMap", 0);
+        tessHeightMapWireShader.setInt("heightMap", 0);
         std::cout << "Loaded heightmap of size " << height << " x " << width << std::endl;
     }
     else
@@ -174,6 +176,7 @@ int main()
 
     glPatchParameteri(GL_PATCH_VERTICES, NUM_PATCH_PTS);
 
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -193,9 +196,11 @@ int main()
         glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
+
         // be sure to activate shader when setting uniforms/drawing objects
         tessHeightMapShader.use();
-        //glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+        
         // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100000.0f);
         glm::mat4 view = camera.GetViewMatrix();
@@ -206,14 +211,27 @@ int main()
         glm::mat4 model = glm::mat4(1.0f);
         tessHeightMapShader.setMat4("model", model);
 
+
         // render the terrain
         glBindVertexArray(terrainVAO);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+        glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS* rez* rez);
+
+        // Wireframe
+        tessHeightMapWireShader.use();
+        tessHeightMapWireShader.setMat4("projection", projection);
+        tessHeightMapShader.setMat4("view", view);
+        tessHeightMapShader.setMat4("model", model);
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        glLineWidth(2.0f);
         glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * rez * rez);
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
+
     }
 
     // optional: de-allocate all resources once they've outlived their purpose:
