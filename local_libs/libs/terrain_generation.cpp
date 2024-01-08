@@ -20,7 +20,7 @@ void TerrainGenerator::GenerateTerrain(const int width, const int height, const 
     mountainRangeNoise.SetSeed(12345);
 
     FastNoiseLite biomeNoise;
-    biomeNoise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+    biomeNoise.SetNoiseType(FastNoiseLite::NoiseType_Value);
     biomeNoise.SetFrequency(1.0f);
     biomeNoise.SetSeed(12345);
  
