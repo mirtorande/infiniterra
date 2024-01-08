@@ -95,14 +95,15 @@ int main()
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
     // load image, create texture and generate mipmaps
     int width, height, nrChannels;
-    TerrainGenerator::GenerateTerrain(1024, 1024, 1);
+    TerrainGenerator::GenerateTerrain(1024, 1024, 0, 0, 1);
     unsigned char* data = stbi_load("resources/textures/generated_terrain.png", &width, &height, &nrChannels, 0);
 
 
@@ -120,6 +121,43 @@ int main()
         std::cout << "Failed to load texture" << std::endl;
     }
     stbi_image_free(data);
+
+    // -------Second chunk------------------------------------------------------------------------------------------------------------------
+     // load and create a texture
+    // -------------------------
+    unsigned int texture2;
+    glGenTextures(1, &texture2);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(GL_TEXTURE_2D, texture2); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    // set the texture wrapping parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    // set texture filtering parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    // load image, create texture and generate mipmaps
+    TerrainGenerator::GenerateTerrain(1024, 1024, 1024, 0.0f, 1);
+    data = stbi_load("resources/textures/generated_terrain.png", &width, &height, &nrChannels, 0);
+
+
+    if (data)
+    {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+
+        //tessHeightMapShader.setInt("heightMap", 0);
+        //tessHeightMapWireShader.setInt("heightMap", 0);
+        std::cout << "Loaded heightmap of size " << height << " x " << width << std::endl;
+    }
+    else
+    {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+    
+    //-------------------------------------------------------------------------------------------------------------------------------
+
 
     // set up vertex data (and buffer(s)) and configure vertex attributes
     // ------------------------------------------------------------------
@@ -216,6 +254,18 @@ int main()
         glBindVertexArray(terrainVAO);
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
         glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS* rez* rez);
+
+        // render the second terrain
+        tessHeightMapShader.setInt("heightMap", 1);
+        model = glm::translate(model, glm::vec3(1024.0f, 0.0f, 0.0f));
+        tessHeightMapShader.setMat4("model", model);
+        glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * rez * rez);
+
+        // resetta la situazione
+        tessHeightMapShader.setInt("heightMap", 0);
+        model = glm::translate(model, glm::vec3(-1024.0f, 0.0f, 0.0f));
+        tessHeightMapShader.setMat4("model", model);
+
 
         // Wireframe
         tessHeightMapWireShader.use();

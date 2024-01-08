@@ -4,7 +4,7 @@
 
 class TerrainGenerator {
 public:
-    static void GenerateTerrain(const int width, const int height, const int channels);
+    static void GenerateTerrain(const int width, const int height, const int widthOffset, const int heightOffset, const int channels);
 };
 
 #endif
