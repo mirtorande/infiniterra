@@ -7,16 +7,22 @@
 
 
 void TerrainGenerator::GenerateTerrain(const int width, const int height, const int widthOffset, const int heightOffset, const int channels) {
-    FastNoiseLite noise;
-    noise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
-    noise.SetFrequency(4.0f);
-    noise.SetFractalType(FastNoiseLite::FractalType_FBm);
-    noise.SetFractalOctaves(4);
-    noise.SetFractalLacunarity(2.0f);
+    
+    FastNoiseLite mountainRangeNoise;
+    mountainRangeNoise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
+    mountainRangeNoise.SetFrequency(4.0f);
+    mountainRangeNoise.SetFractalType(FastNoiseLite::FractalType_FBm);
+    mountainRangeNoise.SetFractalOctaves(4);
+    mountainRangeNoise.SetFractalLacunarity(2.0f);
     // Il fractal gain è il fattore di attenuazione del rumore, minore è il valore, più liscio sarà il terreno
-    noise.SetFractalGain(0.4f);
+    mountainRangeNoise.SetFractalGain(0.4f);
     // To make it so that the noise starts from specific coordinates, we can set the seed
-    noise.SetSeed(12345);
+    mountainRangeNoise.SetSeed(12345);
+
+    FastNoiseLite biomeNoise;
+    biomeNoise.SetNoiseType(FastNoiseLite::NoiseType_Cellular);
+    biomeNoise.SetFrequency(1.0f);
+    biomeNoise.SetSeed(12345);
  
 
     unsigned char* image = new unsigned char[width * height * channels]; // Array per i dati dell'immagine
@@ -28,13 +34,16 @@ void TerrainGenerator::GenerateTerrain(const int width, const int height, const 
             float nx = static_cast<float>(x + widthOffset) / static_cast<float>(width);
             float ny = static_cast<float>(y + heightOffset) / static_cast<float>(height);
 
-            float value = noise.GetNoise(nx, ny);
+            float value = mountainRangeNoise.GetNoise(nx, ny);
             // Applica l'operazione ABS() per ottenere il rumore ridged
             value = fabsf(value);
 
 
             // Inverti i valori per far sì che la cresta si verifichi ai valori più alti. Moltiplico per 1.5 per aumentare il range di valori raggunti (Valore empirico)
             value = 1.0f - 1.5f * value;
+
+            // Moltiplica per il valore del bioma, risacalato tra 0 e 1
+            value = value * 0.5f * (biomeNoise.GetNoise(nx, ny) + 1.0f);
 
             // Converte il valore in unsigned char (0-255)
             image[(y * width + x) * channels] = static_cast<unsigned char>(value * 255.0f);
