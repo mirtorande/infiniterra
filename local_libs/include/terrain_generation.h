@@ -4,7 +4,9 @@
 
 class TerrainGenerator {
 public:
-    static void GenerateTerrain(const int width, const int height, const int widthOffset, const int heightOffset, const int channels);
+    static unsigned char* GenerateTerrainHeights(const int width, const int height, const int widthOffset, const int heightOffset, const int channels);
+
+    static std::vector<float> GenerateChunkGeometry(const int width, const int height, const unsigned rez);
 };
 
 #endif

@@ -3,6 +3,7 @@
 
 #include "stb_image.h"
 #include "terrain_generation.h"
+#include "terrain.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
@@ -22,7 +23,6 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
-const unsigned int NUM_PATCH_PTS = 4;
 
 // camera - give pretty starting point
 Camera camera(glm::vec3(67.0f, 627.5f, 169.9f),
@@ -83,137 +83,20 @@ int main()
     // -----------------------------
     glEnable(GL_DEPTH_TEST);
 
-    // build and compile our shader program
-    // ------------------------------------
-    Shader tessHeightMapShader("shaders/terrain.vs", "shaders/terrain.fs", "shaders/terrain.tcs", "shaders/terrain.tes");
-    Shader tessHeightMapWireShader("shaders/terrain.vs", "shaders/wireframe.fs", "shaders/terrain.tcs", "shaders/terrain.tes");
-
-    // load and create a texture
-    // -------------------------
-    unsigned int texture;
-    glGenTextures(1, &texture);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // load image, create texture and generate mipmaps
-    int width, height, nrChannels;
-    TerrainGenerator::GenerateTerrain(1024, 1024, 0, 0, 1);
-    unsigned char* data = stbi_load("resources/textures/generated_terrain.png", &width, &height, &nrChannels, 0);
-
-
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        tessHeightMapShader.setInt("heightMap", 0);
-        tessHeightMapWireShader.setInt("heightMap", 0);
-        std::cout << "Loaded heightmap of size " << height << " x " << width << std::endl;
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
-
-    // -------Second chunk------------------------------------------------------------------------------------------------------------------
-     // load and create a texture
-    // -------------------------
-    unsigned int texture2;
-    glGenTextures(1, &texture2);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, texture2); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
-    // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    // set texture filtering parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-    // load image, create texture and generate mipmaps
-    TerrainGenerator::GenerateTerrain(1024, 1024, 1024, 0.0f, 1);
-    data = stbi_load("resources/textures/generated_terrain.png", &width, &height, &nrChannels, 0);
-
-
-    if (data)
-    {
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
-        glGenerateMipmap(GL_TEXTURE_2D);
-
-        //tessHeightMapShader.setInt("heightMap", 0);
-        //tessHeightMapWireShader.setInt("heightMap", 0);
-        std::cout << "Loaded heightmap of size " << height << " x " << width << std::endl;
-    }
-    else
-    {
-        std::cout << "Failed to load texture" << std::endl;
-    }
-    stbi_image_free(data);
     
-    //-------------------------------------------------------------------------------------------------------------------------------
+
+    // Generate Terrain Heights
+    int width = 1024, height = 1024, nrChannels = 1;
+    unsigned char* heights = TerrainGenerator::GenerateTerrainHeights(width, height, 0, 0, nrChannels);
 
 
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-    std::vector<float> vertices;
+    // Generate Terrain Geometry
+    unsigned res = 20;
+    std::vector<float> geometry = TerrainGenerator::GenerateChunkGeometry(width, height, res);
 
-    unsigned rez = 20;
-    for (unsigned i = 0; i <= rez - 1; i++)
-    {
-        for (unsigned j = 0; j <= rez - 1; j++)
-        {
-            vertices.push_back(-width / 2.0f + width * i / (float)rez); // v.x
-            vertices.push_back(0.0f); // v.y
-            vertices.push_back(-height / 2.0f + height * j / (float)rez); // v.z
-            vertices.push_back(i / (float)rez); // u
-            vertices.push_back(j / (float)rez); // v
 
-            vertices.push_back(-width / 2.0f + width * (i + 1) / (float)rez); // v.x
-            vertices.push_back(0.0f); // v.y
-            vertices.push_back(-height / 2.0f + height * j / (float)rez); // v.z
-            vertices.push_back((i + 1) / (float)rez); // u
-            vertices.push_back(j / (float)rez); // v
-
-            vertices.push_back(-width / 2.0f + width * i / (float)rez); // v.x
-            vertices.push_back(0.0f); // v.y
-            vertices.push_back(-height / 2.0f + height * (j + 1) / (float)rez); // v.z
-            vertices.push_back(i / (float)rez); // u
-            vertices.push_back((j + 1) / (float)rez); // v
-
-            vertices.push_back(-width / 2.0f + width * (i + 1) / (float)rez); // v.x
-            vertices.push_back(0.0f); // v.y
-            vertices.push_back(-height / 2.0f + height * (j + 1) / (float)rez); // v.z
-            vertices.push_back((i + 1) / (float)rez); // u
-            vertices.push_back((j + 1) / (float)rez); // v
-        }
-    }
-    std::cout << "Loaded " << rez * rez << " patches of 4 control points each" << std::endl;
-    std::cout << "Processing " << rez * rez * 4 << " vertices in vertex shader" << std::endl;
-
-    // first, configure the cube's VAO (and terrainVBO)
-    unsigned int terrainVAO, terrainVBO;
-    glGenVertexArrays(1, &terrainVAO);
-    glBindVertexArray(terrainVAO);
-
-    glGenBuffers(1, &terrainVBO);
-    glBindBuffer(GL_ARRAY_BUFFER, terrainVBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * vertices.size(), &vertices[0], GL_STATIC_DRAW);
-
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-    // texCoord attribute
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(sizeof(float) * 3));
-    glEnableVertexAttribArray(1);
-
-    glPatchParameteri(GL_PATCH_VERTICES, NUM_PATCH_PTS);
-
+    // Create Terrain
+    Terrain chunk = Terrain(width, height, geometry, heights, res);
 
     // render loop
     // -----------
@@ -235,47 +118,11 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
-        // be sure to activate shader when setting uniforms/drawing objects
-        tessHeightMapShader.use();
-
-        
-        // view/projection transformations
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100000.0f);
         glm::mat4 view = camera.GetViewMatrix();
-        tessHeightMapShader.setMat4("projection", projection);
-        tessHeightMapShader.setMat4("view", view);
-
-        // world transformation
         glm::mat4 model = glm::mat4(1.0f);
-        tessHeightMapShader.setMat4("model", model);
 
-
-        // render the terrain
-        glBindVertexArray(terrainVAO);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-        glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS* rez* rez);
-
-        // render the second terrain
-        tessHeightMapShader.setInt("heightMap", 1);
-        model = glm::translate(model, glm::vec3(1024.0f, 0.0f, 0.0f));
-        tessHeightMapShader.setMat4("model", model);
-        glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * rez * rez);
-
-        // resetta la situazione
-        tessHeightMapShader.setInt("heightMap", 0);
-        model = glm::translate(model, glm::vec3(-1024.0f, 0.0f, 0.0f));
-        tessHeightMapShader.setMat4("model", model);
-
-
-        // Wireframe
-        tessHeightMapWireShader.use();
-        tessHeightMapWireShader.setMat4("projection", projection);
-        tessHeightMapShader.setMat4("view", view);
-        tessHeightMapShader.setMat4("model", model);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-        glLineWidth(2.0f);
-        glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * rez * rez);
-
+        chunk.Render(model, view, projection);
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
@@ -286,8 +133,7 @@ int main()
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    glDeleteVertexArrays(1, &terrainVAO);
-    glDeleteBuffers(1, &terrainVBO);
+    
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
