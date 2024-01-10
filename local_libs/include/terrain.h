@@ -12,9 +12,8 @@ public:
     void Render(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
 
 private:
-    unsigned resolution;
+    unsigned resolution, terrainVAO, terrainVBO, heightsTexture;
     std::vector<float> vertices;
-    unsigned int terrainVAO, terrainVBO;
     Shader tessHeightMapShader, tessHeightMapWireShader;
 };
 

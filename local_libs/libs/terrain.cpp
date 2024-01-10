@@ -12,12 +12,11 @@ Terrain::Terrain(const int width, const int height, std::vector<float> vertices,
 
     // load and create a texture
     // -------------------------
-    unsigned int texture;
-    glGenTextures(1, &texture);
+    glGenTextures(1, &heightsTexture);
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, texture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
+    glBindTexture(GL_TEXTURE_2D, heightsTexture); // all upcoming GL_TEXTURE_2D operations now have effect on this texture object
     // set the texture wrapping parameters
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);	// set texture wrapping to GL_REPEAT (default wrapping method)
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     // set texture filtering parameters
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
@@ -37,11 +36,9 @@ Terrain::Terrain(const int width, const int height, std::vector<float> vertices,
         std::cout << "Failed to load texture" << std::endl;
     }
 
+    glBindTexture(GL_TEXTURE_2D, 0); // unbind texture when done so we won't accidentily mess up our texture.
 
-    // set up vertex data (and buffer(s)) and configure vertex attributes
-    // ------------------------------------------------------------------
-
-    // first, configure the cube's VAO (and terrainVBO)
+    // configure the cube's VAO (and terrainVBO)
     glGenVertexArrays(1, &terrainVAO);
     glBindVertexArray(terrainVAO);
 
@@ -79,6 +76,7 @@ void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::m
 
 
     // render the terrain
+    glBindTexture(GL_TEXTURE_2D, heightsTexture);
     glBindVertexArray(terrainVAO);
     glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
     glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * resolution * resolution);

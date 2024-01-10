@@ -85,18 +85,20 @@ int main()
 
     
 
-    // Generate Terrain Heights
+    // Generate Chunk
     int width = 1024, height = 1024, nrChannels = 1;
-    unsigned char* heights = TerrainGenerator::GenerateTerrainHeights(width, height, 0, 0, nrChannels);
-
-
-    // Generate Terrain Geometry
     unsigned res = 20;
+    unsigned char* heights = TerrainGenerator::GenerateTerrainHeights(width, height, 0, 0, nrChannels);
     std::vector<float> geometry = TerrainGenerator::GenerateChunkGeometry(width, height, res);
-
-
-    // Create Terrain
     Terrain chunk = Terrain(width, height, geometry, heights, res);
+
+    // Chunk 2
+    unsigned char* heights2 = TerrainGenerator::GenerateTerrainHeights(width, height, 1024, 0, nrChannels);
+    Terrain chunk2 = Terrain(width, height, geometry, heights2, res);
+
+    // Chunk 3
+    unsigned char* heights3 = TerrainGenerator::GenerateTerrainHeights(width, height, 1024, 1024, nrChannels);
+    Terrain chunk3 = Terrain(width, height, geometry, heights3, res);
 
     // render loop
     // -----------
@@ -123,6 +125,15 @@ int main()
         glm::mat4 model = glm::mat4(1.0f);
 
         chunk.Render(model, view, projection);
+
+        glm::mat4 model2 = glm::translate(model, glm::vec3(1024.0f, 0.0f, 0.0f));
+
+        chunk2.Render(model2, view, projection);
+
+        glm::mat4 model3 = glm::translate(model, glm::vec3(1024.0f, 0.0f, 1024.0f));
+
+        chunk3.Render(model3, view, projection);
+
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
         // -------------------------------------------------------------------------------
