@@ -23,6 +23,7 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned int SCR_WIDTH = 800;
 const unsigned int SCR_HEIGHT = 600;
+const unsigned int CHUNK_SIZE = 128;
 
 // camera - give pretty starting point
 Camera camera(glm::vec3(67.0f, 627.5f, 169.9f),
@@ -86,19 +87,24 @@ int main()
     
 
     // Generate Chunk
-    int width = 1024, height = 1024, nrChannels = 1;
-    unsigned res = 20;
-    unsigned char* heights = TerrainGenerator::GenerateTerrainHeights(width, height, 0, 0, nrChannels);
+    int width = CHUNK_SIZE, height = CHUNK_SIZE, nrChannels = 1;
+    unsigned res = 3;
+    unsigned char* heights;
+    
     std::vector<float> geometry = TerrainGenerator::GenerateChunkGeometry(width, height, res);
-    Terrain chunk = Terrain(width, height, geometry, heights, res);
+    std::vector<Terrain> chunks;
+
+    Terrain chunk = Terrain(width, height, geometry, TerrainGenerator::GenerateTerrainHeights(width, height, 0, 0, nrChannels), res);
+    chunks.push_back(chunk);
 
     // Chunk 2
-    unsigned char* heights2 = TerrainGenerator::GenerateTerrainHeights(width, height, 1024, 0, nrChannels);
-    Terrain chunk2 = Terrain(width, height, geometry, heights2, res);
+    Terrain chunk2 = Terrain(width, height, geometry, TerrainGenerator::GenerateTerrainHeights(width, height, CHUNK_SIZE, 0, nrChannels), res);
+    chunks.push_back(chunk2);
 
     // Chunk 3
-    unsigned char* heights3 = TerrainGenerator::GenerateTerrainHeights(width, height, 1024, 1024, nrChannels);
-    Terrain chunk3 = Terrain(width, height, geometry, heights3, res);
+    Terrain chunk3 = Terrain(width, height, geometry, TerrainGenerator::GenerateTerrainHeights(width, height, 2 * CHUNK_SIZE, 0, nrChannels), res);
+    chunks.push_back(chunk3);
+
 
     // render loop
     // -----------
@@ -124,15 +130,23 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
 
-        chunk.Render(model, view, projection);
+        //chunks[0].Render(model, view, projection);
 
-        glm::mat4 model2 = glm::translate(model, glm::vec3(1024.0f, 0.0f, 0.0f));
+        for (int i = 0; i < chunks.size(); i++)
+        {
+			chunks[i].Render(model, view, projection);
+            model = glm::translate(model, glm::vec3(CHUNK_SIZE, 0.0f, 0.0f));
+		}
 
-        chunk2.Render(model2, view, projection);
+        //chunks[0].Render(model, view, projection);
 
-        glm::mat4 model3 = glm::translate(model, glm::vec3(1024.0f, 0.0f, 1024.0f));
+        //glm::mat4 model2 = glm::translate(model, glm::vec3(1024.0f, 0.0f, 0.0f));
 
-        chunk3.Render(model3, view, projection);
+        //chunk2.Render(model2, view, projection);
+
+        //glm::mat4 model3 = glm::translate(model, glm::vec3(1024.0f, 0.0f, 1024.0f));
+
+        //chunk3.Render(model3, view, projection);
 
 
         // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
