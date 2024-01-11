@@ -82,11 +82,12 @@ void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::m
     glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * resolution * resolution);
 
     // Wireframe
+    /*
     tessHeightMapWireShader.use();
     tessHeightMapWireShader.setMat4("projection", projection);
     tessHeightMapShader.setMat4("view", view);
     tessHeightMapShader.setMat4("model", model);
     glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     glLineWidth(2.0f);
-    glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * resolution * resolution);
+    glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * resolution * resolution);*/
 }

@@ -25,9 +25,9 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 // settings
-const unsigned int SCR_WIDTH = 800;
-const unsigned int SCR_HEIGHT = 600;
-const unsigned int CHUNK_SIZE = 128;
+const unsigned int SCR_WIDTH = 1000;
+const unsigned int SCR_HEIGHT = 800;
+const unsigned int CHUNK_SIZE = 1024;
 
 // camera - give pretty starting point
 Camera camera(glm::vec3(67.0f, 627.5f, 169.9f),
@@ -70,7 +70,7 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -92,21 +92,21 @@ int main()
 
     // Generate Chunk
     int width = CHUNK_SIZE, height = CHUNK_SIZE, nrChannels = 1;
-    unsigned res = 3;
+    unsigned res = 20;
     
     std::vector<float> geometry = TerrainGenerator::GenerateChunkGeometry(width, height, res);
     std::vector<Terrain> chunks;
+    chunks.reserve(9);
 
-    Terrain chunk = Terrain(width, height, geometry, TerrainGenerator::GenerateTerrainHeights(width, height, 0, 0, nrChannels), res);
-    chunks.push_back(chunk);
-
-    // Chunk 2
-    Terrain chunk2 = Terrain(width, height, geometry, TerrainGenerator::GenerateTerrainHeights(width, height, CHUNK_SIZE, 0, nrChannels), res);
-    chunks.push_back(chunk2);
-
-    // Chunk 3
-    Terrain chunk3 = Terrain(width, height, geometry, TerrainGenerator::GenerateTerrainHeights(width, height, 2 * CHUNK_SIZE, 0, nrChannels), res);
-    chunks.push_back(chunk3);
+    
+    // Make the 9 chunks square around 0,0 with two for loops with variables z and x
+    for (int z = 0; z < 3; z++)
+    {
+        for (int x = 0; x < 3; x++)
+        {
+			chunks.emplace_back(Terrain(width, height, geometry, TerrainGenerator::GenerateTerrainHeights(width, height, x * CHUNK_SIZE, z * CHUNK_SIZE, nrChannels), res));
+		}
+	}
 
 
     // Imgui
@@ -148,13 +148,15 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
 
-        //chunks[0].Render(model, view, projection);
-
-        for (int i = 0; i < chunks.size(); i++)
+        // Render the 9 chunks
+        for (int z = 0; z < 3; z++)
         {
-			chunks[i].Render(model, view, projection);
-            model = glm::translate(model, glm::vec3(CHUNK_SIZE, 0.0f, 0.0f));
-		}
+            for (int x = 0; x < 3; x++)
+            {
+                chunks[3*z + x].Render(glm::translate(model, glm::vec3(CHUNK_SIZE*x, 0.0f, CHUNK_SIZE*z)), view, projection);
+            }
+        }
+      
 
         ImGui::Begin("Terrain Generator");
         ImGui::Text("FPS: %f", 1.0f / deltaTime);
