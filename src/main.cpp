@@ -1,3 +1,7 @@
+#include "imgui.h"
+#include "imgui_impl_glfw.h"
+#include "imgui_impl_opengl3.h"
+
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
@@ -66,7 +70,7 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -89,7 +93,6 @@ int main()
     // Generate Chunk
     int width = CHUNK_SIZE, height = CHUNK_SIZE, nrChannels = 1;
     unsigned res = 3;
-    unsigned char* heights;
     
     std::vector<float> geometry = TerrainGenerator::GenerateChunkGeometry(width, height, res);
     std::vector<Terrain> chunks;
@@ -104,6 +107,16 @@ int main()
     // Chunk 3
     Terrain chunk3 = Terrain(width, height, geometry, TerrainGenerator::GenerateTerrainHeights(width, height, 2 * CHUNK_SIZE, 0, nrChannels), res);
     chunks.push_back(chunk3);
+
+
+    // Imgui
+
+    IMGUI_CHECKVERSION();
+    ImGui::CreateContext();
+    ImGuiIO& io = ImGui::GetIO(); (void)io;
+    ImGui::StyleColorsDark();
+    ImGui_ImplGlfw_InitForOpenGL(window, true);
+    ImGui_ImplOpenGL3_Init("#version 410");
 
 
     // render loop
@@ -126,6 +139,11 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
+        // Start the Dear ImGui frame
+        ImGui_ImplOpenGL3_NewFrame();
+        ImGui_ImplGlfw_NewFrame();            
+        ImGui::NewFrame();
+
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100000.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
@@ -138,18 +156,15 @@ int main()
             model = glm::translate(model, glm::vec3(CHUNK_SIZE, 0.0f, 0.0f));
 		}
 
-        //chunks[0].Render(model, view, projection);
+        ImGui::Begin("Terrain Generator");
+        ImGui::Text("FPS: %f", 1.0f / deltaTime);
+        ImGui::End();
 
-        //glm::mat4 model2 = glm::translate(model, glm::vec3(1024.0f, 0.0f, 0.0f));
-
-        //chunk2.Render(model2, view, projection);
-
-        //glm::mat4 model3 = glm::translate(model, glm::vec3(1024.0f, 0.0f, 1024.0f));
-
-        //chunk3.Render(model3, view, projection);
+        ImGui::Render();
+        ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 
-        // glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
+        // glfw: swap buffers and poll IO events
         // -------------------------------------------------------------------------------
         glfwSwapBuffers(window);
         glfwPollEvents();
@@ -158,7 +173,9 @@ int main()
 
     // optional: de-allocate all resources once they've outlived their purpose:
     // ------------------------------------------------------------------------
-    
+    ImGui_ImplOpenGL3_Shutdown();
+    ImGui_ImplGlfw_Shutdown();
+    ImGui::DestroyContext();
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------
