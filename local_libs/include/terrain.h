@@ -6,23 +6,29 @@
 
 class Terrain {
 public:
-    Terrain(const int width, const int height, std::vector<float> geometry, static unsigned char* heights, unsigned res);
+    // Constructor
+    Terrain(const int width, const int height, std::vector<float> geometry, unsigned char* heights, unsigned res);
+    // Copy Constructor
     Terrain(Terrain& o) = delete;
-    inline Terrain(Terrain&& o) : tessHeightMapShader(o.tessHeightMapShader), tessHeightMapWireShader(o.tessHeightMapWireShader) {
+    // Move Constructor
+    inline Terrain(Terrain&& o) noexcept : tessHeightMapShader(o.tessHeightMapShader), tessHeightMapWireShader(o.tessHeightMapWireShader)  {
         resolution = o.resolution;
         terrainVAO = o.terrainVAO;
         terrainVBO = o.terrainVBO;
-        heightsTexture = o.heightsTexture;
+        heightsTexture = std::move(o.heightsTexture);
         vertices = std::move(o.vertices);
 
+        // Unbind the VAO and VBO from the other object
         o.terrainVAO = 0;
         o.terrainVBO = 0;
     }
+    // Copy Operator
+    operator Terrain&() = delete;
+    // Destructor
     ~Terrain();
 
     void Render(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection);
 
-    operator Terrain&() = delete;
 
 
 private:

@@ -17,6 +17,7 @@
 
 #include <iostream>
 #include <vector>
+#include <utility>
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int modifiers);
@@ -25,14 +26,16 @@ void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
 
 // settings
-const unsigned int SCR_WIDTH = 1000;
-const unsigned int SCR_HEIGHT = 800;
-const unsigned int CHUNK_SIZE = 1024;
+const unsigned SCR_WIDTH = 1000;
+const unsigned SCR_HEIGHT = 800;
+const unsigned CHUNK_SIZE = 1024;
+const unsigned HI_RES_RESOLUTION = 20;
+const unsigned LOW_RES_RESOLUTION = 5;
+const unsigned VIEW_DISTANCE = CHUNK_SIZE * 5;
+const unsigned HOW_MANY_CHUNKS_PER_SIDE = 5;
 
 // camera - give pretty starting point
-Camera camera(glm::vec3(67.0f, 627.5f, 169.9f),
-    glm::vec3(0.0f, 1.0f, 0.0f),
-    -128.1f, -42.4f);
+Camera camera(glm::vec3(0.0f, 200.0f, 0.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;
@@ -40,6 +43,21 @@ bool firstMouse = true;
 // timing
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
+
+void generate_chunks_around_camera(std::vector<std::pair<glm::vec2,Terrain>>& chunks)
+{
+    std::vector<float> lowResGeometry = TerrainGenerator::GenerateChunkGeometry(CHUNK_SIZE, CHUNK_SIZE, LOW_RES_RESOLUTION);
+    float bottomLeftX = floor(camera.Position.x / CHUNK_SIZE);
+    float bottomLeftZ = floor(camera.Position.z/CHUNK_SIZE);
+	// Render the 9 chunks
+    for (int z = bottomLeftZ; z < bottomLeftZ+3; z++)
+    {
+		for (int x = bottomLeftX; x < bottomLeftX+3; x++)
+		{
+            chunks.emplace_back(glm::vec2(x * CHUNK_SIZE, z * CHUNK_SIZE), Terrain(CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, TerrainGenerator::GenerateTerrainHeights(CHUNK_SIZE, CHUNK_SIZE, x * CHUNK_SIZE, z * CHUNK_SIZE, 1), LOW_RES_RESOLUTION));
+		}
+	}
+}
 
 int main()
 {
@@ -92,19 +110,20 @@ int main()
 
     // Generate Chunk
     int width = CHUNK_SIZE, height = CHUNK_SIZE, nrChannels = 1;
-    unsigned res = 20;
-    
-    std::vector<float> geometry = TerrainGenerator::GenerateChunkGeometry(width, height, res);
-    std::vector<Terrain> chunks;
-    chunks.reserve(9);
+    std::vector<float> hiResGeometry = TerrainGenerator::GenerateChunkGeometry(CHUNK_SIZE, CHUNK_SIZE, HI_RES_RESOLUTION);
+    std::vector<float> lowResGeometry = TerrainGenerator::GenerateChunkGeometry(CHUNK_SIZE, CHUNK_SIZE, LOW_RES_RESOLUTION);
+    //std::vector<Terrain> chunks;
+    std::vector<std::pair<glm::vec2, Terrain>> chunks;
+    chunks.reserve(100);
 
     
     // Make the 9 chunks square around 0,0 with two for loops with variables z and x
-    for (int z = 0; z < 3; z++)
+    float centerOffset = HOW_MANY_CHUNKS_PER_SIDE * CHUNK_SIZE / 2;
+    for (int z = 0; z < HOW_MANY_CHUNKS_PER_SIDE; z++)
     {
-        for (int x = 0; x < 3; x++)
+        for (int x = 0; x < HOW_MANY_CHUNKS_PER_SIDE; x++)
         {
-			chunks.emplace_back(Terrain(width, height, geometry, TerrainGenerator::GenerateTerrainHeights(width, height, x * CHUNK_SIZE, z * CHUNK_SIZE, nrChannels), res));
+			chunks.emplace_back(glm::vec2(x * CHUNK_SIZE - centerOffset, z * CHUNK_SIZE - centerOffset), Terrain(CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, TerrainGenerator::GenerateTerrainHeights(CHUNK_SIZE, CHUNK_SIZE, x * CHUNK_SIZE, z * CHUNK_SIZE, nrChannels), LOW_RES_RESOLUTION));
 		}
 	}
 
@@ -118,7 +137,7 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 410");
 
-
+    bool notGenerated = true;
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -148,18 +167,28 @@ int main()
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
 
-        // Render the 9 chunks
-        for (int z = 0; z < 3; z++)
+        if (notGenerated && camera.Position.x > HOW_MANY_CHUNKS_PER_SIDE * CHUNK_SIZE)
         {
-            for (int x = 0; x < 3; x++)
-            {
-                chunks[3*z + x].Render(glm::translate(model, glm::vec3(CHUNK_SIZE*x, 0.0f, CHUNK_SIZE*z)), view, projection);
-            }
+            notGenerated = false;
+			generate_chunks_around_camera(chunks);
+        }
+
+        // Render the chunks
+   
+        for (int i = 0; i < chunks.size(); i++)
+        {
+            // Render the chunk only if it's in the camera's view
+            //if (camera.Position.x - VIEW_DISTANCE < chunks[i].first.x && chunks[i].first.x < camera.Position.x + VIEW_DISTANCE &&
+            //    camera.Position.z - VIEW_DISTANCE < chunks[i].first.z && chunks[i].first.z < camera.Position.z + VIEW_DISTANCE)
+            chunks[i].second.Render(glm::translate(model, glm::vec3(chunks[i].first.x, 0.0f, chunks[i].first.y)), view, projection);
         }
       
 
         ImGui::Begin("Terrain Generator");
+        ImGui::SetWindowSize(ImVec2(400, 200));
         ImGui::Text("FPS: %f", 1.0f / deltaTime);
+        ImGui::Text("Camera position: x:%f y:%f z:%f", camera.Position.x, camera.Position.y, camera.Position.z);
+        ImGui::Text("Hasn't Splurged: %s", notGenerated ? "true":"false");
         ImGui::End();
 
         ImGui::Render();

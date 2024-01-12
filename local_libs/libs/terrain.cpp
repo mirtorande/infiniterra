@@ -3,7 +3,7 @@
 const unsigned int NUM_PATCH_PTS = 4;
 
 
-Terrain::Terrain(const int width, const int height, std::vector<float> vertices, static unsigned char* heights, unsigned res) :
+Terrain::Terrain(const int width, const int height, std::vector<float> vertices, unsigned char* heights, unsigned res) :
     tessHeightMapShader("shaders/terrain.vs", "shaders/terrain.fs", "shaders/terrain.tcs", "shaders/terrain.tes"),
     tessHeightMapWireShader("shaders/terrain.vs", "shaders/wireframe.fs", "shaders/terrain.tcs", "shaders/terrain.tes")
 {
@@ -54,11 +54,16 @@ Terrain::Terrain(const int width, const int height, std::vector<float> vertices,
     glEnableVertexAttribArray(1);
 
     glPatchParameteri(GL_PATCH_VERTICES, NUM_PATCH_PTS);
+
+    // Free the memory allocated for heights
+    delete[] heights;
 }
 
 Terrain::~Terrain() {
     glDeleteVertexArrays(1, &terrainVAO);
     glDeleteBuffers(1, &terrainVBO);
+    // Risky(?), keep an eye on this
+    vertices.clear();
 }
 
 void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
