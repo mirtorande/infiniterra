@@ -28,14 +28,14 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned SCR_WIDTH = 1000;
 const unsigned SCR_HEIGHT = 800;
-const unsigned CHUNK_SIZE = 1024;
+const unsigned CHUNK_SIZE = 512;
 const unsigned HI_RES_RESOLUTION = 20;
-const unsigned LOW_RES_RESOLUTION = 5;
+const unsigned LOW_RES_RESOLUTION = 10;
 const unsigned VIEW_DISTANCE = CHUNK_SIZE * 5;
-const unsigned HOW_MANY_CHUNKS_PER_SIDE = 5;
+const unsigned HOW_MANY_CHUNKS_PER_SIDE = 10;
 
 // camera - give pretty starting point
-Camera camera(glm::vec3(0.0f, 200.0f, 0.0f));
+Camera camera(glm::vec3(0.0f, 80.0f, 0.0f));
 float lastX = SCR_WIDTH / 2.0f;
 float lastY = SCR_HEIGHT / 2.0f;
 bool firstMouse = true;

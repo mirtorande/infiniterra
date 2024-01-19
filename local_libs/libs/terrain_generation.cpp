@@ -14,18 +14,18 @@ unsigned char* TerrainGenerator::GenerateTerrainHeights(const int width, const i
     FastNoiseLite mountainRangeNoise;
     mountainRangeNoise.SetNoiseType(FastNoiseLite::NoiseType_Perlin);
     mountainRangeNoise.SetFrequency(4.0f);
-    //mountainRangeNoise.SetFractalType(FastNoiseLite::FractalType_FBm);
-    //mountainRangeNoise.SetFractalOctaves(4);
-    //mountainRangeNoise.SetFractalLacunarity(2.0f);
+    mountainRangeNoise.SetFractalType(FastNoiseLite::FractalType_FBm);
+    mountainRangeNoise.SetFractalOctaves(4);
+    mountainRangeNoise.SetFractalLacunarity(2.0f);
     // Il fractal gain è il fattore di attenuazione del rumore, minore è il valore, più liscio sarà il terreno
-    //mountainRangeNoise.SetFractalGain(0.4f);
+    mountainRangeNoise.SetFractalGain(0.4f);
     // To make it so that the noise starts from specific coordinates, we can set the seed
     mountainRangeNoise.SetSeed(12345);
 
     FastNoiseLite biomeNoise;
     biomeNoise.SetNoiseType(FastNoiseLite::NoiseType_Value);
     biomeNoise.SetFrequency(1.0f);
-    //biomeNoise.SetFractalType(FastNoiseLite::FractalType_FBm);
+    biomeNoise.SetFractalType(FastNoiseLite::FractalType_FBm);
     biomeNoise.SetSeed(12345);
  
 
