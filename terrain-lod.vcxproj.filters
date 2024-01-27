@@ -87,6 +87,9 @@
     <None Include="shaders\terrain.tes" />
     <None Include="local_libs\libs\glfw3.dll" />
     <None Include="shaders\wireframe.fs" />
+    <None Include="shaders\screen_quad.vs" />
+    <None Include="shaders\screen_quad.fs" />
+    <None Include="shaders\compute_shader.cs" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\skybox\back.jpg">
@@ -195,6 +198,9 @@
     </ClInclude>
     <ClInclude Include="imgui\imgui_impl_opengl3_loader.h">
       <Filter>File di intestazione\imgui</Filter>
+    </ClInclude>
+    <ClInclude Include="local_libs\include\compute_shader.h">
+      <Filter>File di intestazione</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -157,6 +157,9 @@
     <None Include="local_libs\libs\assimp-vc143-mtd.dll" />
     <None Include="local_libs\libs\assimp-vc143-mtd.exp" />
     <None Include="local_libs\libs\glfw3.dll" />
+    <None Include="shaders\compute_shader.cs" />
+    <None Include="shaders\screen_quad.fs" />
+    <None Include="shaders\screen_quad.vs" />
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
     <None Include="shaders\terrain.fs" />
@@ -187,6 +190,7 @@
     <ClInclude Include="imgui\imstb_textedit.h" />
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="local_libs\include\camera.h" />
+    <ClInclude Include="local_libs\include\compute_shader.h" />
     <ClInclude Include="local_libs\include\cubemap.h" />
     <ClInclude Include="local_libs\include\EBO.h" />
     <ClInclude Include="local_libs\include\FastNoiseLite.h" />
