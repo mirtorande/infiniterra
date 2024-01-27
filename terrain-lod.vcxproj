@@ -151,7 +151,7 @@
     <ClCompile Include="local_libs\libs\texture.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\image_importer.cpp" />
-    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\test-main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="local_libs\libs\assimp-vc143-mtd.dll" />
