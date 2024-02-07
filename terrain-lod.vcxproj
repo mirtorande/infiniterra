@@ -74,6 +74,10 @@
     <IncludePath>$(ProjectDir)\local_libs\include\imgui;$(ProjectDir)\local_libs\include;$(IncludePath)</IncludePath>
     <LibraryPath>$(ProjectDir)\local_libs\libs\imgui;$(ProjectDir)\local_libs\libs;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <IncludePath>$(ProjectDir)\local_libs\include\imgui;$(ProjectDir)\local_libs\include;$(IncludePath)</IncludePath>
+    <LibraryPath>$(ProjectDir)\local_libs\libs\imgui;$(ProjectDir)\local_libs\libs;$(LibraryPath)</LibraryPath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -151,7 +155,7 @@
     <ClCompile Include="local_libs\libs\texture.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\image_importer.cpp" />
-    <ClCompile Include="src\test-main.cpp" />
+    <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="local_libs\libs\assimp-vc143-mtd.dll" />
@@ -194,6 +198,7 @@
     <ClInclude Include="local_libs\include\cubemap.h" />
     <ClInclude Include="local_libs\include\EBO.h" />
     <ClInclude Include="local_libs\include\FastNoiseLite.h" />
+    <ClInclude Include="local_libs\include\GLErrors.h" />
     <ClInclude Include="local_libs\include\KHR\khrplatform.h" />
     <ClInclude Include="local_libs\include\mesh.h" />
     <ClInclude Include="local_libs\include\model.h" />

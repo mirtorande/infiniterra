@@ -7,11 +7,11 @@
 class Terrain {
 public:
     // Constructor
-    Terrain(const int width, const int height, std::vector<float> geometry, unsigned char* heights, unsigned res);
+    Terrain(const int width, const int height, std::vector<float> geometry, unsigned res);
     // Copy Constructor
     Terrain(Terrain& o) = delete;
     // Move Constructor
-    inline Terrain(Terrain&& o) noexcept : tessHeightMapShader(o.tessHeightMapShader), tessHeightMapWireShader(o.tessHeightMapWireShader)  {
+    inline Terrain(Terrain&& o) noexcept : tessHeightMapShader(o.tessHeightMapShader) {
         resolution = o.resolution;
         terrainVAO = o.terrainVAO;
         terrainVBO = o.terrainVBO;
@@ -34,7 +34,7 @@ public:
 private:
     unsigned resolution, terrainVAO, terrainVBO, heightsTexture;
     std::vector<float> vertices;
-    Shader tessHeightMapShader, tessHeightMapWireShader;
+    Shader tessHeightMapShader;
 };
 
 #endif // !TERRAIN_H

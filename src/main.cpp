@@ -11,6 +11,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <shader.h>
 #include <camera.h>
@@ -19,11 +20,13 @@
 #include <vector>
 #include <utility>
 
+
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
 void key_callback(GLFWwindow* window, int key, int scancode, int action, int modifiers);
 void mouse_callback(GLFWwindow* window, double xpos, double ypos);
 void scroll_callback(GLFWwindow* window, double xoffset, double yoffset);
 void processInput(GLFWwindow* window);
+
 
 // settings
 const unsigned SCR_WIDTH = 1000;
@@ -32,7 +35,7 @@ const unsigned CHUNK_SIZE = 512;
 const unsigned HI_RES_RESOLUTION = 20;
 const unsigned LOW_RES_RESOLUTION = 10;
 const unsigned VIEW_DISTANCE = CHUNK_SIZE * 5;
-const unsigned HOW_MANY_CHUNKS_PER_SIDE = 10;
+const unsigned HOW_MANY_CHUNKS_PER_SIDE = 25;
 
 // camera - give pretty starting point
 Camera camera(glm::vec3(0.0f, 80.0f, 0.0f));
@@ -54,7 +57,7 @@ void generate_chunks_around_camera(std::vector<std::pair<glm::vec2,Terrain>>& ch
     {
 		for (int x = bottomLeftX; x < bottomLeftX+3; x++)
 		{
-            chunks.emplace_back(glm::vec2(x * CHUNK_SIZE, z * CHUNK_SIZE), Terrain(CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, TerrainGenerator::GenerateTerrainHeights(CHUNK_SIZE, CHUNK_SIZE, x * CHUNK_SIZE, z * CHUNK_SIZE, 1), LOW_RES_RESOLUTION));
+            chunks.emplace_back(glm::vec2(x * CHUNK_SIZE, z * CHUNK_SIZE), Terrain(CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, LOW_RES_RESOLUTION));
 		}
 	}
 }
@@ -65,7 +68,7 @@ int main()
     // ------------------------------
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 #ifdef __APPLE__
@@ -123,10 +126,11 @@ int main()
     {
         for (int x = 0; x < HOW_MANY_CHUNKS_PER_SIDE; x++)
         {
-			chunks.emplace_back(glm::vec2(x * CHUNK_SIZE - centerOffset, z * CHUNK_SIZE - centerOffset), Terrain(CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, TerrainGenerator::GenerateTerrainHeights(CHUNK_SIZE, CHUNK_SIZE, x * CHUNK_SIZE, z * CHUNK_SIZE, nrChannels), LOW_RES_RESOLUTION));
+			chunks.emplace_back(glm::vec2(x * CHUNK_SIZE - centerOffset, z * CHUNK_SIZE - centerOffset), Terrain(CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, LOW_RES_RESOLUTION));
 		}
 	}
 
+    //Terrain testChunk = Terrain(CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, LOW_RES_RESOLUTION);
 
     // Imgui
 
@@ -170,7 +174,7 @@ int main()
         if (notGenerated && camera.Position.x > HOW_MANY_CHUNKS_PER_SIDE * CHUNK_SIZE)
         {
             notGenerated = false;
-			generate_chunks_around_camera(chunks);
+			//generate_chunks_around_camera(chunks);
         }
 
         // Render the chunks
@@ -183,6 +187,7 @@ int main()
             chunks[i].second.Render(glm::translate(model, glm::vec3(chunks[i].first.x, 0.0f, chunks[i].first.y)), view, projection);
         }
       
+        //testChunk.Render(model, view, projection);
 
         ImGui::Begin("Terrain Generator");
         ImGui::SetWindowSize(ImVec2(400, 200));
