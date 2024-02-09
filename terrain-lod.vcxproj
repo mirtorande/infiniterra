@@ -168,8 +168,8 @@
     <None Include="shaders\skybox.vert" />
     <None Include="shaders\terrain.frag" />
     <None Include="shaders\terrain.fs" />
-    <None Include="shaders\terrain.tessc" />
-    <None Include="shaders\terrain.tesse" />
+    <None Include="shaders\terrain.tesc" />
+    <None Include="shaders\terrain.tese" />
     <None Include="shaders\terrain.vert" />
     <None Include="shaders\wireframe.fs" />
   </ItemGroup>

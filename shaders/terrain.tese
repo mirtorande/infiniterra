@@ -24,7 +24,14 @@ void main()
     vec2 t1 = (t11 - t10) * u + t10;
     vec2 texCoord = (t1 - t0) * v + t0;
 
-    float Height = texture(heightMap, texCoord).x * 128.0 - 32.0;
+    // Define the border size
+    const float borderSize = 0.1; // Adjust as needed
+
+    // Adjust texture coordinates to leave a border
+    vec2 adjustedTexCoord = texCoord * (1.0 - 2.0 * borderSize) + borderSize;
+
+    // Sample height map using adjusted texture coordinates
+    float Height = texture(heightMap, adjustedTexCoord).x * 128.0 - 32.0;
 
     vec4 p00 = gl_in[0].gl_Position;
     vec4 p01 = gl_in[1].gl_Position;

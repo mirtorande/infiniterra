@@ -91,7 +91,7 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -142,6 +142,8 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 450");
 
     bool notGenerated = true;
+    static bool wireframe = true;
+
     // render loop
     // -----------
     while (!glfwWindowShouldClose(window))
@@ -167,17 +169,14 @@ int main()
         ImGui_ImplGlfw_NewFrame();            
         ImGui::NewFrame();
 
+
         glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100000.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
 
-        if (notGenerated && camera.Position.x > HOW_MANY_CHUNKS_PER_SIDE * CHUNK_SIZE)
-        {
-            notGenerated = false;
-			//generate_chunks_around_camera(chunks);
-        }
-
         // Render the chunks
+        glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
+
    
         for (int i = 0; i < chunks.size(); i++)
         {
@@ -193,7 +192,9 @@ int main()
         ImGui::SetWindowSize(ImVec2(400, 200));
         ImGui::Text("FPS: %f", 1.0f / deltaTime);
         ImGui::Text("Camera position: x:%f y:%f z:%f", camera.Position.x, camera.Position.y, camera.Position.z);
-        ImGui::Text("Hasn't Splurged: %s", notGenerated ? "true":"false");
+        // Tickbox to enable/disable wireframe mode
+        ImGui::Checkbox("Wireframe", &wireframe);
+        ImGui::Text("wireframe mode: %s", wireframe ? "on" : "off");
         ImGui::End();
 
         ImGui::Render();

@@ -89,6 +89,6 @@ void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::m
     // render the terrain
     glBindTexture(GL_TEXTURE_2D, heightsTexture);
     glBindVertexArray(terrainVAO);
-    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
     glDrawArrays(GL_PATCHES, 0, NUM_PATCH_PTS * resolution * resolution);
 }
