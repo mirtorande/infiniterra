@@ -77,7 +77,7 @@ void main()
     float grey = pNoise(coord, 1000);
     // Ridge
     grey = abs(grey);
-    grey = 1.0 - grey;
+    //grey = 1.0 - grey;
     imageStore(imgOutput, texelCoord, vec4(grey, grey, grey, 1.0));
 }
 

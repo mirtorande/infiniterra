@@ -25,10 +25,10 @@ void main()
     vec2 texCoord = (t1 - t0) * v + t0;
 
     // Define the border size
-    const float borderSize = 0.1; // Adjust as needed
+    const float borderSize = 0; // Adjust as needed
 
     // Adjust texture coordinates to leave a border
-    vec2 adjustedTexCoord = texCoord * (1.0 - 2.0 * borderSize) + borderSize;
+    vec2 adjustedTexCoord = texCoord / 1.5;
 
     // Sample height map using adjusted texture coordinates
     float Height = texture(heightMap, adjustedTexCoord).x * 128.0 - 32.0;
