@@ -7,13 +7,13 @@ const unsigned int NUM_PATCH_PTS = 4;
 
 
 Terrain::Terrain(const int width, const int height, std::vector<float> vertices, unsigned res) :
-    tessHeightMapShader("shaders/terrain.vs", "shaders/terrain.fs", "shaders/terrain.tcs", "shaders/terrain.tes")
+    tessHeightMapShader("shaders/terrain.vert", "shaders/terrain.frag", "shaders/terrain.tessc", "shaders/terrain.tesse")
 {
 
     resolution = res;
 
     // NEW GENERATION
-    ComputeShader computeShader("shaders/compute_shader.cs");
+    ComputeShader computeShader("shaders/compute_shader.comp");
 
     tessHeightMapShader.use();
     tessHeightMapShader.setInt("heightMap", 0);
@@ -70,7 +70,7 @@ Terrain::~Terrain() {
     vertices.clear();
 }
 
-void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection) {
+void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, const glm::vec3& cameraPos) {
     // be sure to activate shader when setting uniforms/drawing objects
     tessHeightMapShader.use();
 
@@ -82,7 +82,8 @@ void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::m
 
     // world transformation
     tessHeightMapShader.setMat4("model", model);
-
+    tessHeightMapShader.setVec3("lightPos", glm::vec3(100.0f, 200.0f, 100.0f));
+    tessHeightMapShader.setVec3("camPos", cameraPos);
 
     // render the terrain
     glBindTexture(GL_TEXTURE_2D, heightsTexture);

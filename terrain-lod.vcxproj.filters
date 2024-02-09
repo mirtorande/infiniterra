@@ -80,16 +80,17 @@
     <None Include="shaders\skybox.frag" />
     <None Include="shaders\skybox.vert" />
     <None Include="shaders\terrain.fs" />
-    <None Include="shaders\terrain.vs" />
+    <None Include="shaders\terrain.vert" />
     <None Include="local_libs\libs\assimp-vc143-mtd.dll" />
     <None Include="local_libs\libs\assimp-vc143-mtd.exp" />
-    <None Include="shaders\terrain.tcs" />
-    <None Include="shaders\terrain.tes" />
+    <None Include="shaders\terrain.tessc" />
+    <None Include="shaders\terrain.tesse" />
     <None Include="local_libs\libs\glfw3.dll" />
     <None Include="shaders\wireframe.fs" />
-    <None Include="shaders\screen_quad.vs" />
-    <None Include="shaders\screen_quad.fs" />
-    <None Include="shaders\compute_shader.cs" />
+    <None Include="shaders\screen_quad.vert" />
+    <None Include="shaders\screen_quad.frag" />
+    <None Include="shaders\compute_shader.comp" />
+    <None Include="shaders\terrain.frag" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\skybox\back.jpg">

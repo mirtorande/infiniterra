@@ -139,7 +139,7 @@ int main()
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(window, true);
-    ImGui_ImplOpenGL3_Init("#version 410");
+    ImGui_ImplOpenGL3_Init("#version 450");
 
     bool notGenerated = true;
     // render loop
@@ -184,7 +184,7 @@ int main()
             // Render the chunk only if it's in the camera's view
             //if (camera.Position.x - VIEW_DISTANCE < chunks[i].first.x && chunks[i].first.x < camera.Position.x + VIEW_DISTANCE &&
             //    camera.Position.z - VIEW_DISTANCE < chunks[i].first.z && chunks[i].first.z < camera.Position.z + VIEW_DISTANCE)
-            chunks[i].second.Render(glm::translate(model, glm::vec3(chunks[i].first.x, 0.0f, chunks[i].first.y)), view, projection);
+            chunks[i].second.Render(glm::translate(model, glm::vec3(chunks[i].first.x, 0.0f, chunks[i].first.y)), view, projection, camera.Position);
         }
       
         //testChunk.Render(model, view, projection);
