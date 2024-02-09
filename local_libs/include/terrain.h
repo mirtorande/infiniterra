@@ -7,7 +7,7 @@
 class Terrain {
 public:
     // Constructor
-    Terrain(const int width, const int height, std::vector<float> geometry, unsigned res);
+    Terrain(const int xOffset, const int yOffset, const int size, std::vector<float> geometry, unsigned res);
     // Copy Constructor
     Terrain(Terrain& o) = delete;
     // Move Constructor

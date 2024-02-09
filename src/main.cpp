@@ -57,7 +57,7 @@ void generate_chunks_around_camera(std::vector<std::pair<glm::vec2,Terrain>>& ch
     {
 		for (int x = bottomLeftX; x < bottomLeftX+3; x++)
 		{
-            chunks.emplace_back(glm::vec2(x * CHUNK_SIZE, z * CHUNK_SIZE), Terrain(CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, LOW_RES_RESOLUTION));
+            chunks.emplace_back(glm::vec2(x * CHUNK_SIZE, z * CHUNK_SIZE), Terrain(x * CHUNK_SIZE, z * CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, LOW_RES_RESOLUTION));
 		}
 	}
 }
@@ -126,7 +126,7 @@ int main()
     {
         for (int x = 0; x < HOW_MANY_CHUNKS_PER_SIDE; x++)
         {
-			chunks.emplace_back(glm::vec2(x * CHUNK_SIZE - centerOffset, z * CHUNK_SIZE - centerOffset), Terrain(CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, LOW_RES_RESOLUTION));
+			chunks.emplace_back(glm::vec2(x * CHUNK_SIZE - centerOffset, z * CHUNK_SIZE - centerOffset), Terrain(x * CHUNK_SIZE, z * CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, LOW_RES_RESOLUTION));
 		}
 	}
 

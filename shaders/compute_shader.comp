@@ -1,0 +1,83 @@
+#version 430 core
+
+layout(local_size_x = 10, local_size_y = 10, local_size_z = 1) in;
+
+// ----------------------------------------------------------------------------
+//
+// uniforms
+//
+// ----------------------------------------------------------------------------
+
+layout(r32f, binding = 0) uniform image2D imgOutput;
+
+layout(location = 0) uniform float xOffset;
+layout(location = 1) uniform float yOffset;
+
+// ----------------------------------------------------------------------------
+//
+// functions
+//
+// ----------------------------------------------------------------------------
+
+#define M_PI 3.14159265358979323846
+
+float rand(vec2 co) { return fract(sin(dot(co.xy, vec2(12.9898, 78.233))) * 43758.5453); }
+float rand(vec2 co, float l) { return rand(vec2(rand(co), l)); }
+float rand(vec2 co, float l, float t) { return rand(vec2(rand(co, l), t)); }
+
+float noise(vec2 p, float freq)
+{
+    float unit = gl_WorkGroupSize.x / freq;
+    vec2 ij = floor(p / unit);
+    vec2 xy = mod(p, unit) / unit;
+    //xy = 3.*xy*xy-2.*xy*xy*xy;
+    xy = .5 * (1.- cos(M_PI * xy));
+    float a = rand((ij + vec2(0., 0.)));
+    float b = rand((ij + vec2(1., 0.)));
+    float c = rand((ij + vec2(0., 1.)));
+    float d = rand((ij + vec2(1., 1.)));
+    float x1 = mix(a, b, xy.x);
+    float x2 = mix(c, d, xy.x);
+    return mix(x1, x2, xy.y);
+}
+
+float pNoise(vec2 p, int res)
+{
+    float persistance = .5;
+    float n = 0.;
+    float normK = 0.;
+    float f = 4.;
+    float amp = 1.;
+    int iCount = 0;
+    for (int i = 0; i < 50; i++)
+    {
+        n += amp * noise(p, f);
+        f *= 2.;
+        normK += amp;
+        amp *= persistance;
+        if (iCount == res) break;
+        iCount++;
+    }
+    float nf = n / normK;
+    return nf * nf * nf * nf;
+}
+
+
+void main()
+{
+    vec2 coord;
+    ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
+    float speed = 100;
+    // the width of the texture
+    float width = 1000;
+    float freq = 15.0;
+
+    coord.x = mod(float(texelCoord.x + xOffset), width*10) / (gl_NumWorkGroups.x * gl_WorkGroupSize.x) * freq;
+    coord.y = float(texelCoord.y + yOffset) / (gl_NumWorkGroups.y * gl_WorkGroupSize.y) * freq;
+    float grey = pNoise(coord, 1000);
+    // Ridge
+    grey = abs(grey);
+    grey = 1.0 - grey;
+    imageStore(imgOutput, texelCoord, vec4(grey, grey, grey, 1.0));
+}
+
