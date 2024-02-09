@@ -82,8 +82,14 @@ public:
             Position += Right * velocity;
         if (direction == DESCEND)
             Position -= Up * velocity;
-        if (direction == ASCEND)
-            Position += Up * velocity;
+        if (direction == ASCEND){
+            // cieling limit to 200
+            glm::vec3 temp = Up * velocity;
+            if (Position.y + temp.y > 200.0f)
+                temp.y = 200.0f - Position.y;
+
+            Position += temp;
+        }
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
