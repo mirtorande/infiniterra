@@ -82,7 +82,7 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
-    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -167,11 +167,22 @@ int main()
                 {
                     // Generate the chunk
                     chunks.insert(std::pair(chunkPos, new Terrain((chunkCenterX + x) * CHUNK_SIZE, (chunkCenterZ + z) * CHUNK_SIZE, CHUNK_SIZE, hiResGeometry, HI_RES_RESOLUTION)));
-                    std::cout << "Generated chunk at: " << chunkPos.x << ", " << chunkPos.y << std::endl;
+                    //std::cout << "Generated chunk at: " << chunkPos.x << ", " << chunkPos.y << std::endl;
 				}
-                chunks[chunkPos]->Render(glm::translate(model, glm::vec3(chunkPos.x, 0.0f, chunkPos.y)), view, projection, camera.Position);
+                // Render the chunk if it is within the view cone
+                glm::vec2 chunkDirection = chunkPos - glm::vec2(camera.Position.x, camera.Position.z);
+                float distance = glm::length(chunkDirection);
+                if (distance < CHUNK_SIZE || glm::dot(glm::vec2(camera.Front.x, camera.Front.z), chunkDirection) > 0.99f) {
+                    chunks[chunkPos]->Render(glm::translate(model, glm::vec3(chunkPos.x, 0.0f, chunkPos.y)), view, projection, camera.Position);
+                    std:: cout << "O";
+                }
+                else {
+                    std::cout << "X";
+                }
             }
+            std::cout << std::endl;
         }
+        std::cout << "---------------------" << std::endl;
 
         ImGui::Begin("Terrain Generator");
         ImGui::SetWindowSize(ImVec2(400, 200));
