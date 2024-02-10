@@ -5,19 +5,23 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 
-#include "stb_image.h"
+//#include "stb_image.h"
 #include "terrain_generation.h"
 #include "terrain.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include "glm/gtx/hash.hpp"
+
 
 #include <shader.h>
 #include <camera.h>
 
 #include <iostream>
 #include <vector>
+#include <unordered_map>
 #include <utility>
 
 
@@ -34,7 +38,7 @@ const unsigned SCR_HEIGHT = 800;
 const unsigned CHUNK_SIZE = 512;
 const unsigned HI_RES_RESOLUTION = 20;
 const unsigned LOW_RES_RESOLUTION = 15;
-const unsigned VIEW_DISTANCE = CHUNK_SIZE * 5;
+const int VIEW_DISTANCE = 5; //In chunks
 const unsigned HOW_MANY_CHUNKS_PER_SIDE = 25;
 
 // camera - give pretty starting point
@@ -47,20 +51,7 @@ bool firstMouse = true;
 float deltaTime = 0.0f;
 float lastFrame = 0.0f;
 
-void generate_chunks_around_camera(std::vector<std::pair<glm::vec2,Terrain>>& chunks)
-{
-    std::vector<float> lowResGeometry = TerrainGenerator::GenerateChunkGeometry(CHUNK_SIZE, CHUNK_SIZE, LOW_RES_RESOLUTION);
-    float bottomLeftX = floor(camera.Position.x / CHUNK_SIZE);
-    float bottomLeftZ = floor(camera.Position.z/CHUNK_SIZE);
-	// Render the 9 chunks
-    for (int z = bottomLeftZ; z < bottomLeftZ+3; z++)
-    {
-		for (int x = bottomLeftX; x < bottomLeftX+3; x++)
-		{
-            chunks.emplace_back(glm::vec2(x * CHUNK_SIZE, z * CHUNK_SIZE), Terrain(x * CHUNK_SIZE, z * CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, LOW_RES_RESOLUTION));
-		}
-	}
-}
+
 
 int main()
 {
@@ -91,7 +82,7 @@ int main()
     glfwSetScrollCallback(window, scroll_callback);
 
     // tell GLFW to capture our mouse
-    glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    //glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
     // glad: load all OpenGL function pointers
     // ---------------------------------------
@@ -114,23 +105,8 @@ int main()
     // Generate Chunk
     int width = CHUNK_SIZE, height = CHUNK_SIZE, nrChannels = 1;
     std::vector<float> hiResGeometry = TerrainGenerator::GenerateChunkGeometry(CHUNK_SIZE, CHUNK_SIZE, HI_RES_RESOLUTION);
-    std::vector<float> lowResGeometry = TerrainGenerator::GenerateChunkGeometry(CHUNK_SIZE, CHUNK_SIZE, LOW_RES_RESOLUTION);
-    //std::vector<Terrain> chunks;
-    std::vector<std::pair<glm::vec2, Terrain>> chunks;
-    chunks.reserve(100);
-
-    
-    // Make the 9 chunks square around 0,0 with two for loops with variables z and x
-    float centerOffset = HOW_MANY_CHUNKS_PER_SIDE * CHUNK_SIZE / 2;
-    for (int z = 0; z < HOW_MANY_CHUNKS_PER_SIDE; z++)
-    {
-        for (int x = 0; x < HOW_MANY_CHUNKS_PER_SIDE; x++)
-        {
-			chunks.emplace_back(glm::vec2(x * CHUNK_SIZE - centerOffset, z * CHUNK_SIZE - centerOffset), Terrain(x * CHUNK_SIZE, z * CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, LOW_RES_RESOLUTION));
-		}
-	}
-
-    //Terrain testChunk = Terrain(CHUNK_SIZE, CHUNK_SIZE, lowResGeometry, LOW_RES_RESOLUTION);
+  
+    std::unordered_map<glm::vec2, Terrain*> chunks;
 
     // Imgui
 
@@ -177,16 +153,25 @@ int main()
         // Render the chunks
         glPolygonMode(GL_FRONT_AND_BACK, wireframe ? GL_LINE : GL_FILL);
 
-   
-        for (int i = 0; i < chunks.size(); i++)
-        {
-            // Render the chunk only if it's in the camera's view
-            //if (camera.Position.x - VIEW_DISTANCE < chunks[i].first.x && chunks[i].first.x < camera.Position.x + VIEW_DISTANCE &&
-            //    camera.Position.z - VIEW_DISTANCE < chunks[i].first.z && chunks[i].first.z < camera.Position.z + VIEW_DISTANCE)
-            chunks[i].second.Render(glm::translate(model, glm::vec3(chunks[i].first.x, 0.0f, chunks[i].first.y)), view, projection, camera.Position);
-        }
+
+        // Find the center of the chunk the camera is in
+        float chunkCenterX = floor(camera.Position.x / CHUNK_SIZE) + 0.5f;
+        float chunkCenterZ = floor(camera.Position.z / CHUNK_SIZE) + 0.5f;
       
-        //testChunk.Render(model, view, projection);
+        for (int z = -VIEW_DISTANCE; z < VIEW_DISTANCE; z++)
+        {
+            for (int x = -VIEW_DISTANCE; x < VIEW_DISTANCE; x++)
+            {
+                glm::vec2 chunkPos = glm::vec2((chunkCenterX + x) * CHUNK_SIZE, (chunkCenterZ + z) * CHUNK_SIZE);
+                if (chunks.count(chunkPos) == 0)
+                {
+                    // Generate the chunk
+                    chunks.insert(std::pair(chunkPos, new Terrain((chunkCenterX + x) * CHUNK_SIZE, (chunkCenterZ + z) * CHUNK_SIZE, CHUNK_SIZE, hiResGeometry, HI_RES_RESOLUTION)));
+                    std::cout << "Generated chunk at: " << chunkPos.x << ", " << chunkPos.y << std::endl;
+				}
+                chunks[chunkPos]->Render(glm::translate(model, glm::vec3(chunkPos.x, 0.0f, chunkPos.y)), view, projection, camera.Position);
+            }
+        }
 
         ImGui::Begin("Terrain Generator");
         ImGui::SetWindowSize(ImVec2(400, 200));
@@ -213,6 +198,12 @@ int main()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+        // Free memory for all Terrain objects stored in chunks
+    for (auto& pair : chunks) {
+        delete pair.second; // Delete the Terrain object pointed to by the second element of the pair
+    }
+        // Clear the chunks map
+    chunks.clear();
 
     // glfw: terminate, clearing all previously allocated GLFW resources.
     // ------------------------------------------------------------------

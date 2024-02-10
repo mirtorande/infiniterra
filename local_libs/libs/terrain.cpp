@@ -71,6 +71,7 @@ Terrain::~Terrain() {
     vertices.clear();
 }
 
+
 void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, const glm::vec3& cameraPos) {
     // be sure to activate shader when setting uniforms/drawing objects
     tessHeightMapShader.use();

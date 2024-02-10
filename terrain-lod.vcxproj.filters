@@ -83,14 +83,14 @@
     <None Include="shaders\terrain.vert" />
     <None Include="local_libs\libs\assimp-vc143-mtd.dll" />
     <None Include="local_libs\libs\assimp-vc143-mtd.exp" />
-    <None Include="shaders\terrain.tessc" />
-    <None Include="shaders\terrain.tesse" />
     <None Include="local_libs\libs\glfw3.dll" />
     <None Include="shaders\wireframe.fs" />
     <None Include="shaders\screen_quad.vert" />
     <None Include="shaders\screen_quad.frag" />
     <None Include="shaders\compute_shader.comp" />
     <None Include="shaders\terrain.frag" />
+    <None Include="shaders\terrain.tesc" />
+    <None Include="shaders\terrain.tese" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="resources\textures\skybox\back.jpg">
