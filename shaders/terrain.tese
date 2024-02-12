@@ -8,7 +8,15 @@ uniform mat4 projection;
 
 in vec2 TextureCoord[];
 
-out vec3 Position, Normal;
+out float worldPositionY;
+out vec3 viewPosition;
+out vec3 groundColor;
+
+vec2 adjust(vec2 coord) {
+	return coord / 1.5;
+}
+
+float rand(vec2 co) { return fract(sin(dot(co.xy, vec2(0.02, 0.01)))); }
 
 void main()
 {
@@ -24,14 +32,9 @@ void main()
     vec2 t1 = (t11 - t10) * u + t10;
     vec2 texCoord = (t1 - t0) * v + t0;
 
-    // Define the border size
-    const float borderSize = 0; // Adjust as needed
-
-    // Adjust texture coordinates to leave a border
-    vec2 adjustedTexCoord = texCoord / 1.5;
-
     // Sample height map using adjusted texture coordinates
-    float Height = texture(heightMap, adjustedTexCoord).x * 128.0 - 32.0;
+    float heightFactor = 256.0;
+    float height = texture(heightMap, adjust(texCoord)).x * heightFactor - heightFactor/4;
 
     vec4 p00 = gl_in[0].gl_Position;
     vec4 p01 = gl_in[1].gl_Position;
@@ -44,11 +47,22 @@ void main()
 
     vec4 p0 = (p01 - p00) * u + p00;
     vec4 p1 = (p11 - p10) * u + p10;
-    vec4 p = (p1 - p0) * v + p0 + normal * Height;
+    vec4 p = (p1 - p0) * v + p0 + normal * height;
 
     gl_Position = projection * view * model * p;
+    worldPositionY = (model * p).y;
 
-    Position = gl_Position.xyz;
-    Normal = normal.xyz;
+    viewPosition = (view * model * p).xyz;
+    float grassHeight = -50.0 + texture(heightMap, adjust(texCoord)).x * 100;
+    float snowHeight = 30.0 - texture(heightMap, adjust(texCoord)).x * 100;
+    const vec3 grassColor = vec3(0.2, 0.3, 0.1);
+    const vec3 dryColor = vec3(0.5, 0.4, 0.3);
+    const vec3 snowColor = vec3(1.0, 1.0, 1.0);
+
+    //Mix between the three different ground colors based on height, normalizing
+    groundColor = mix(grassColor, dryColor, clamp((height - grassHeight)/30, 0, 1));
+    groundColor = mix(groundColor, snowColor, clamp((height - snowHeight)/30, 0, 1));
+
+
 }
 

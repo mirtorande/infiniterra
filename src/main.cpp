@@ -35,10 +35,10 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned SCR_WIDTH = 1000;
 const unsigned SCR_HEIGHT = 800;
-const unsigned CHUNK_SIZE = 512;
+const unsigned CHUNK_SIZE = 1024;
 const unsigned HI_RES_RESOLUTION = 20;
 const unsigned LOW_RES_RESOLUTION = 15;
-const int VIEW_DISTANCE = 5; //In chunks
+const int VIEW_DISTANCE = 6; //In chunks
 const unsigned HOW_MANY_CHUNKS_PER_SIDE = 25;
 
 // camera - give pretty starting point
@@ -137,7 +137,7 @@ int main()
 
         // render
         // ------
-        glClearColor(0.5f, 0.5f, 0.7f, 1.0f);
+        glClearColor(0.6f, 0.6f, 0.7f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -147,7 +147,7 @@ int main()
         ImGui::NewFrame();
 
 
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 100000.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 6500.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
 
@@ -234,9 +234,9 @@ void processInput(GLFWwindow* window)
         glfwSetWindowShouldClose(window, true);
 
     if (glfwGetKey (window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		camera.MovementSpeed = 70.0f;
+		camera.MovementSpeed = 150.0f;
 	else
-		camera.MovementSpeed = 35.0f;
+		camera.MovementSpeed = 75.0f;
 
     if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
         glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
