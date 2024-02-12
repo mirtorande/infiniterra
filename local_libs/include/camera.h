@@ -72,24 +72,24 @@ public:
     void ProcessKeyboard(Camera_Movement direction, float deltaTime)
     {
         float velocity = MovementSpeed * deltaTime;
+        glm::vec3 temp = glm::vec3(0.0f, 0.0f, 0.0f);
         if (direction == FORWARD)
-            Position += Front * velocity;
+            temp += Front * velocity;
         if (direction == BACKWARD)
-            Position -= Front * velocity;
+            temp -= Front * velocity;
         if (direction == LEFT)
-            Position -= Right * velocity;
+            temp -= Right * velocity;
         if (direction == RIGHT)
-            Position += Right * velocity;
+            temp += Right * velocity;
         if (direction == DESCEND)
-            Position -= Up * velocity;
-        if (direction == ASCEND){
-            // cieling limit to 200
-            glm::vec3 temp = Up * velocity;
-            if (Position.y + temp.y > 200.0f)
-                temp.y = 200.0f - Position.y;
-
-            Position += temp;
-        }
+            temp -= Up * velocity;
+        if (direction == ASCEND)
+            temp += Up * velocity;
+            
+        // cieling limit to 200
+        if (Position.y + temp.y > 200.0f)
+            temp.y = 200.0f - Position.y;
+        Position += temp;
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.

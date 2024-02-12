@@ -20,7 +20,7 @@ void Texture::loadTexture(const std::string& filePath) {
 
 
     if (data) {
-        GLenum format = GL_RED; //(channels == 3) ? GL_RGB : GL_RGBA;
+        GLenum format = (channels == 3) ? GL_RGB : GL_RGBA;
 
         glBindTexture(GL_TEXTURE_2D, textureID);
         glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
@@ -43,7 +43,6 @@ void Texture::loadTexture(const std::string& filePath) {
 
 void Texture::bindTexture() {
     std::cout << textureID << std::endl;
-    //glActiveTexture(GL_TEXTURE0);
     glBindTexture(GL_TEXTURE_2D, textureID);
 }
 

@@ -118,7 +118,8 @@ int main()
     ImGui_ImplOpenGL3_Init("#version 450");
 
     bool notGenerated = true;
-    static bool wireframe = true;
+    static bool wireframe = false;
+
 
     // render loop
     // -----------
@@ -136,7 +137,7 @@ int main()
 
         // render
         // ------
-        glClearColor(0.0f, 0.0f, 0.2f, 1.0f);
+        glClearColor(0.5f, 0.5f, 0.7f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -174,15 +175,18 @@ int main()
                 float distance = glm::length(chunkDirection);
                 if (distance < CHUNK_SIZE || glm::dot(glm::vec2(camera.Front.x, camera.Front.z), chunkDirection) > 0.99f) {
                     chunks[chunkPos]->Render(glm::translate(model, glm::vec3(chunkPos.x, 0.0f, chunkPos.y)), view, projection, camera.Position);
-                    std:: cout << "O";
+                    //std:: cout << "O";
                 }
                 else {
-                    std::cout << "X";
+                    //std::cout << "X";
                 }
             }
-            std::cout << std::endl;
+            //std::cout << std::endl;
         }
-        std::cout << "---------------------" << std::endl;
+        //std::cout << "---------------------" << std::endl;
+
+        // Render the skybox
+        
 
         ImGui::Begin("Terrain Generator");
         ImGui::SetWindowSize(ImVec2(400, 200));
@@ -226,8 +230,16 @@ int main()
 // ---------------------------------------------------------------------------------------------------------
 void processInput(GLFWwindow* window)
 {
-    if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+    if (glfwGetKey (window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
         glfwSetWindowShouldClose(window, true);
+
+    if (glfwGetKey (window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+		camera.MovementSpeed = 70.0f;
+	else
+		camera.MovementSpeed = 35.0f;
+
+    if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+        glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         camera.ProcessKeyboard(FORWARD, deltaTime);

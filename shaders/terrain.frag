@@ -9,12 +9,10 @@ uniform vec3 camPos;
 
 void main()
 {
-	//float h = (Height + 16)/64.0f;
-	//FragColor = mix(vec4(0.5, 0.4, 0.1, 1.0), vec4(0.9, 0.9, 1.0, 1.0), h);
     // Light is sun color
-    vec3 lightColor = vec3(1.0, 1.0, 1.0);
+    vec3 lightColor = vec3(1.0, 0.9, 0.9);
     // ambient
-    float ambientStrength = 0.1;
+    float ambientStrength = 0.2;
     vec3 ambient = ambientStrength * lightColor;
   	
     // diffuse 
@@ -24,7 +22,7 @@ void main()
     vec3 diffuse = diff * lightColor;
 
     // specular
-    float specularStrength = 0.5;
+    float specularStrength = 0.1;
     vec3 viewDir = normalize(camPos - Position);
     vec3 reflectDir = reflect(-lightDir, norm);
     float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
