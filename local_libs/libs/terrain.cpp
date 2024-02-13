@@ -27,7 +27,7 @@ Terrain::Terrain(const int xOffset, const int yOffset, const int size, std::vect
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
     GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, size * 1.5f, size * 1.5f, 0, GL_RED, GL_FLOAT, NULL));
+    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, size, size, 0, GL_RED, GL_FLOAT, NULL));
     
     GLCall(glBindImageTexture(0, heightsTexture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F));
 
@@ -37,7 +37,7 @@ Terrain::Terrain(const int xOffset, const int yOffset, const int size, std::vect
     computeShader.use();
     computeShader.setFloat("xOffset", xOffset);
     computeShader.setFloat("yOffset", yOffset);
-    GLCall(glDispatchCompute((unsigned int)size / 7, (unsigned int)size / 7, 1));
+    GLCall(glDispatchCompute((unsigned int)size / 5, (unsigned int)size / 5, 1));
 
     // make sure writing to image has finished before read
     GLCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));

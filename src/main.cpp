@@ -35,7 +35,7 @@ void processInput(GLFWwindow* window);
 // settings
 const unsigned SCR_WIDTH = 1000;
 const unsigned SCR_HEIGHT = 800;
-const unsigned CHUNK_SIZE = 1024;
+const unsigned CHUNK_SIZE = 1000;
 const unsigned HI_RES_RESOLUTION = 20;
 const unsigned LOW_RES_RESOLUTION = 15;
 const int VIEW_DISTANCE = 6; //In chunks
@@ -68,7 +68,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "LearnOpenGL: Terrain GPU", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Infinite Terrain by Mirto", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -147,7 +147,7 @@ int main()
         ImGui::NewFrame();
 
 
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 6500.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 6000.0f);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
 
@@ -156,8 +156,8 @@ int main()
 
 
         // Find the center of the chunk the camera is in
-        float chunkCenterX = floor(camera.Position.x / CHUNK_SIZE) + 0.5f;
-        float chunkCenterZ = floor(camera.Position.z / CHUNK_SIZE) + 0.5f;
+        float chunkCenterX = floor(camera.Position.x / CHUNK_SIZE);
+        float chunkCenterZ = floor(camera.Position.z / CHUNK_SIZE);
       
         for (int z = -VIEW_DISTANCE; z < VIEW_DISTANCE; z++)
         {
@@ -175,17 +175,9 @@ int main()
                 float distance = glm::length(chunkDirection);
                 if (distance < CHUNK_SIZE || glm::dot(glm::vec2(camera.Front.x, camera.Front.z), chunkDirection) > 0.99f) {
                     chunks[chunkPos]->Render(glm::translate(model, glm::vec3(chunkPos.x, 0.0f, chunkPos.y)), view, projection, camera.Position);
-                    //std:: cout << "O";
-                }
-                else {
-                    //std::cout << "X";
                 }
             }
-            //std::cout << std::endl;
         }
-        //std::cout << "---------------------" << std::endl;
-
-        // Render the skybox
         
 
         ImGui::Begin("Terrain Generator");

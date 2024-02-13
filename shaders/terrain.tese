@@ -12,10 +12,6 @@ out float worldPositionY;
 out vec3 viewPosition;
 out vec3 groundColor;
 
-vec2 adjust(vec2 coord) {
-	return coord / 1.5;
-}
-
 float rand(vec2 co) { return fract(sin(dot(co.xy, vec2(0.02, 0.01)))); }
 
 void main()
@@ -34,7 +30,7 @@ void main()
 
     // Sample height map using adjusted texture coordinates
     float heightFactor = 256.0;
-    float height = texture(heightMap, adjust(texCoord)).x * heightFactor - heightFactor/4;
+    float height = texture(heightMap, texCoord).x * heightFactor - heightFactor/4;
 
     vec4 p00 = gl_in[0].gl_Position;
     vec4 p01 = gl_in[1].gl_Position;
@@ -53,8 +49,8 @@ void main()
     worldPositionY = (model * p).y;
 
     viewPosition = (view * model * p).xyz;
-    float grassHeight = -50.0 + texture(heightMap, adjust(texCoord)).x * 100;
-    float snowHeight = 30.0 - texture(heightMap, adjust(texCoord)).x * 100;
+    float grassHeight = -50.0 + texture(heightMap, texCoord).x * 100;
+    float snowHeight = 30.0 - texture(heightMap, texCoord).x * 100;
     const vec3 grassColor = vec3(0.2, 0.3, 0.1);
     const vec3 dryColor = vec3(0.5, 0.4, 0.3);
     const vec3 snowColor = vec3(1.0, 1.0, 1.0);
