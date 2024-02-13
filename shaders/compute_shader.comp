@@ -69,12 +69,14 @@ void main()
     ivec2 texelCoord = ivec2(gl_GlobalInvocationID.xy);
     float speed = 100;
     // the width of the texture
-    float width = 2000;
+    float width = 1000;
+    int generationSize = 1000;
+    float generationBeginning = width * generationSize/2;
     float freq = 10.0;
 
-    coord.x = mod(float(texelCoord.x + xOffset), width*10) / (gl_NumWorkGroups.x * gl_WorkGroupSize.x) * freq;
+    coord.x = mod(float(texelCoord.x + xOffset - generationBeginning), width * generationSize) / (gl_NumWorkGroups.x * gl_WorkGroupSize.x) * freq;
     coord.y = float(texelCoord.y + yOffset) / (gl_NumWorkGroups.y * gl_WorkGroupSize.y) * freq;
-    float grey = pNoise(coord, 1500);
+    float grey = pNoise(coord, 1000);
 
     // Ridge
     grey = abs(grey);

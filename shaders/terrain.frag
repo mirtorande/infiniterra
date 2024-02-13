@@ -11,7 +11,7 @@ uniform vec3 lightPos;
 uniform vec3 camPos;
 
 float anisotropicFog() {
-	float fog = (0.1f-viewPosition.z)/(6500.0 -0.1);
+	float fog = (0.1f-viewPosition.z)/(5000.0 -0.1);
     //float eyePosY = (inverse(view) * vec4(0.0, 0.0, 0.0, 1.0)).y;
     //const float fogHeight = 10.0;
     //float percentInside = fogHeight / (eyePosY - worldPositionY);

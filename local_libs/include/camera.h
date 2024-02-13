@@ -90,6 +90,11 @@ public:
         if (Position.y + temp.y > 200.0f)
             temp.y = 200.0f - Position.y;
         Position += temp;
+
+        // floor limit to 0
+        if (Position.y + temp.y < -30.0f)
+            temp.y = -30.0f - Position.y;
+        Position += temp;
     }
 
     // processes input received from a mouse input system. Expects the offset value in both the x and y direction.
