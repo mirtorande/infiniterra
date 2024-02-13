@@ -10,6 +10,8 @@ uniform mat4 view;
 uniform vec3 lightPos;
 uniform vec3 camPos;
 
+#define SKY_COLOR vec3(0.6, 0.6, 0.7)
+
 float anisotropicFog() {
 	float fog = (0.1f-viewPosition.z)/(5000.0 -0.1);
     //float eyePosY = (inverse(view) * vec4(0.0, 0.0, 0.0, 1.0)).y;
@@ -46,7 +48,6 @@ void main()
     vec3 specular = specularStrength * spec * lightColor;
 
 
-    vec3 skyColor = vec3(0.6, 0.6, 0.7);
     vec3 result = (diff + specular) * groundColor;
-    FragColor.rgb = mix(result, skyColor, fog);
+    FragColor.rgb = mix(result, SKY_COLOR, fog);
 }

@@ -36,10 +36,8 @@ void processInput(GLFWwindow* window);
 const unsigned SCR_WIDTH = 2000;
 const unsigned SCR_HEIGHT = 1000;
 const unsigned CHUNK_SIZE = 1000;
-const unsigned HI_RES_RESOLUTION = 20;
-const unsigned LOW_RES_RESOLUTION = 15;
+const unsigned TERRAIN_RESOLUTION = 20;
 const int VIEW_DISTANCE = 6; //In chunks
-const unsigned HOW_MANY_CHUNKS_PER_SIDE = 25;
 
 // camera - give pretty starting point
 Camera camera(glm::vec3(0.0f, 80.0f, 0.0f));
@@ -104,7 +102,7 @@ int main()
 
     // Generate Chunk
     int width = CHUNK_SIZE, height = CHUNK_SIZE, nrChannels = 1;
-    std::vector<float> hiResGeometry = TerrainGenerator::GenerateChunkGeometry(CHUNK_SIZE, CHUNK_SIZE, HI_RES_RESOLUTION);
+    std::vector<float> terrainGeometry = TerrainGenerator::GenerateChunkGeometry(CHUNK_SIZE, CHUNK_SIZE, TERRAIN_RESOLUTION);
   
     std::unordered_map<glm::vec2, Terrain*> chunks;
 
@@ -167,7 +165,7 @@ int main()
                 if (chunks.count(chunkPos) == 0)
                 {
                     // Generate the chunk
-                    chunks.insert(std::pair(chunkPos, new Terrain((chunkCenterX + x) * CHUNK_SIZE, (chunkCenterZ + z) * CHUNK_SIZE, CHUNK_SIZE, hiResGeometry, HI_RES_RESOLUTION)));
+                    chunks.insert(std::pair(chunkPos, new Terrain((chunkCenterX + x) * CHUNK_SIZE, (chunkCenterZ + z) * CHUNK_SIZE, CHUNK_SIZE, terrainGeometry, TERRAIN_RESOLUTION)));
                     //std::cout << "Generated chunk at: " << chunkPos.x << ", " << chunkPos.y << std::endl;
 				}
                 // Render the chunk if it is within the view cone

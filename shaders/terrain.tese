@@ -12,6 +12,10 @@ out float worldPositionY;
 out vec3 viewPosition;
 out vec3 groundColor;
 
+#define GRASS_COLOR vec3(0.2, 0.3, 0.1)
+#define DRY_COLOR vec3(0.5, 0.4, 0.3)
+#define SNOW_COLOR vec3(1.0, 1.0, 1.0)
+
 float rand(vec2 co) { return fract(sin(dot(co.xy, vec2(0.02, 0.01)))); }
 
 void main()
@@ -52,13 +56,10 @@ void main()
     viewPosition = (view * model * p).xyz;
     float grassHeight = -50.0 + textureValue * 100;
     float snowHeight = 30.0 - textureValue * 100;
-    const vec3 grassColor = vec3(0.2, 0.3, 0.1);
-    const vec3 dryColor = vec3(0.5, 0.4, 0.3);
-    const vec3 snowColor = vec3(1.0, 1.0, 1.0);
 
     //Mix between the three different ground colors based on height, normalizing
-    groundColor = mix(grassColor, dryColor, clamp((height - grassHeight)/30, 0, 1));
-    groundColor = mix(groundColor, snowColor, clamp((height - snowHeight)/30, 0, 1));
+    groundColor = mix(GRASS_COLOR, DRY_COLOR, clamp((height - grassHeight)/30, 0, 1));
+    groundColor = mix(groundColor, SNOW_COLOR, clamp((height - snowHeight)/30, 0, 1));
 
 
 }

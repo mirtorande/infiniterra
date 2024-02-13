@@ -147,16 +147,9 @@
     <ClCompile Include="imgui\imgui_impl_opengl3.cpp" />
     <ClCompile Include="imgui\imgui_tables.cpp" />
     <ClCompile Include="imgui\imgui_widgets.cpp" />
-    <ClCompile Include="local_libs\libs\cubemap.cpp" />
-    <ClCompile Include="local_libs\libs\EBO.cpp" />
-    <ClCompile Include="local_libs\libs\skybox.cpp" />
     <ClCompile Include="local_libs\libs\terrain.cpp" />
     <ClCompile Include="local_libs\libs\terrain_generation.cpp" />
-    <ClCompile Include="local_libs\libs\VAO.cpp" />
-    <ClCompile Include="local_libs\libs\VBO.cpp" />
-    <ClCompile Include="local_libs\libs\texture.cpp" />
     <ClCompile Include="src\glad.c" />
-    <ClCompile Include="src\image_importer.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -198,23 +191,11 @@
     <ClInclude Include="imgui\imstb_truetype.h" />
     <ClInclude Include="local_libs\include\camera.h" />
     <ClInclude Include="local_libs\include\compute_shader.h" />
-    <ClInclude Include="local_libs\include\cubemap.h" />
-    <ClInclude Include="local_libs\include\EBO.h" />
-    <ClInclude Include="local_libs\include\FastNoiseLite.h" />
     <ClInclude Include="local_libs\include\GLErrors.h" />
     <ClInclude Include="local_libs\include\KHR\khrplatform.h" />
-    <ClInclude Include="local_libs\include\mesh.h" />
-    <ClInclude Include="local_libs\include\model.h" />
     <ClInclude Include="local_libs\include\shader.h" />
-    <ClInclude Include="local_libs\include\skybox.h" />
-    <ClInclude Include="local_libs\include\stb_image.h" />
-    <ClInclude Include="local_libs\include\stb_image_write.h" />
     <ClInclude Include="local_libs\include\terrain.h" />
     <ClInclude Include="local_libs\include\terrain_generation.h" />
-    <ClInclude Include="local_libs\include\VAO.h" />
-    <ClInclude Include="local_libs\include\VBO.h" />
-    <ClInclude Include="local_libs\include\window_io.h" />
-    <ClInclude Include="local_libs\include\texture.h" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="local_libs\libs\assimp-vc143-mtd.lib" />
