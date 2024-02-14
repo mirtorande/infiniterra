@@ -101,7 +101,6 @@ int main()
     
 
     // Generate Chunk
-    int width = CHUNK_SIZE, height = CHUNK_SIZE, nrChannels = 1;
     std::vector<float> terrainGeometry = TerrainGenerator::GenerateChunkGeometry(CHUNK_SIZE, CHUNK_SIZE, TERRAIN_RESOLUTION);
   
     std::unordered_map<glm::vec2, Terrain*> chunks;
@@ -115,8 +114,20 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(window, true);
     ImGui_ImplOpenGL3_Init("#version 450");
 
-    bool notGenerated = true;
+    // ImGUI Variables
     static bool wireframe = false;
+    static float terrainHeight = 256.0f;
+    static int terrainResolution = 20;
+    static float terrainFrequency = 10.0f;
+    static int minTess = 1;
+    static int maxTess = 64;
+    static float minDist = 40.0f;
+    static float maxDist = 1600.0f;
+    static float fogDist = 5000.0f;
+    static float grassColor[3] = { 0.2f, 0.3f, 0.1f };
+    static float dryColor[3] = { 0.5f, 0.4f, 0.3f };
+    static float snowColor[3] = { 1.0f, 1.0f, 1.0f };
+    static float skyColor[3] = { 0.6f, 0.6f, 0.7f };
 
 
     // render loop
@@ -135,7 +146,14 @@ int main()
 
         // render
         // ------
-        glClearColor(0.6f, 0.6f, 0.7f, 1.0f);
+        // 
+        //convert colors to glm::vec3
+        glm::vec3 grassColorVec = glm::vec3(grassColor[0], grassColor[1], grassColor[2]);
+        glm::vec3 dryColorVec = glm::vec3(dryColor[0], dryColor[1], dryColor[2]);
+        glm::vec3 snowColorVec = glm::vec3(snowColor[0], snowColor[1], snowColor[2]);
+        glm::vec3 skyColorVec = glm::vec3(skyColor[0], skyColor[1], skyColor[2]);
+
+        glClearColor(skyColor[0], skyColor[1], skyColor[2], 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 
@@ -145,7 +163,7 @@ int main()
         ImGui::NewFrame();
 
 
-        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, 6000.0f);
+        glm::mat4 projection = glm::perspective(glm::radians(camera.Zoom), (float)SCR_WIDTH / (float)SCR_HEIGHT, 0.1f, fogDist);
         glm::mat4 view = camera.GetViewMatrix();
         glm::mat4 model = glm::mat4(1.0f);
 
@@ -165,26 +183,78 @@ int main()
                 if (chunks.count(chunkPos) == 0)
                 {
                     // Generate the chunk
-                    chunks.insert(std::pair(chunkPos, new Terrain((chunkCenterX + x) * CHUNK_SIZE, (chunkCenterZ + z) * CHUNK_SIZE, CHUNK_SIZE, terrainGeometry, TERRAIN_RESOLUTION)));
-                    //std::cout << "Generated chunk at: " << chunkPos.x << ", " << chunkPos.y << std::endl;
+                    chunks.insert(std::pair(chunkPos, new Terrain((chunkCenterX + x) * CHUNK_SIZE, (chunkCenterZ + z) * CHUNK_SIZE, CHUNK_SIZE, terrainResolution, terrainFrequency, terrainGeometry)));
 				}
                 // Render the chunk if it is within the view cone
                 glm::vec2 chunkDirection = chunkPos - glm::vec2(camera.Position.x, camera.Position.z);
                 float distance = glm::length(chunkDirection);
                 if (distance < CHUNK_SIZE || glm::dot(glm::vec2(camera.Front.x, camera.Front.z), chunkDirection) > 0.99f) {
-                    chunks[chunkPos]->Render(glm::translate(model, glm::vec3(chunkPos.x, 0.0f, chunkPos.y)), view, projection, camera.Position);
+                    chunks[chunkPos]->Render(
+                        glm::translate(model, glm::vec3(chunkPos.x, 0.0f, chunkPos.y)), view, projection,
+                        terrainHeight, camera.Position,
+                        minTess, maxTess, minDist, maxDist, fogDist,
+                        grassColorVec, dryColorVec, snowColorVec
+                    );
                 }
             }
         }
-        
 
-        ImGui::Begin("Terrain Generator");
-        ImGui::SetWindowSize(ImVec2(400, 200));
-        ImGui::Text("FPS: %f", 1.0f / deltaTime);
-        ImGui::Text("Camera position: x:%f y:%f z:%f", camera.Position.x, camera.Position.y, camera.Position.z);
+        ImGui::Begin("Navigation Settings");
+        ImGui::SetWindowPos(ImVec2(20, 20));
+        ImGui::SetWindowSize(ImVec2(400, 120));
+        ImGui::Text("FPS: %.2f", 1.0f / deltaTime);
+        // Add some space
+        ImGui::Spacing();
+        // Add text to display the camera position shortened to 2 decimal places
+        ImGui::Text("Camera position:\n x:%.2f y:%.2f z:%.2f", camera.Position.x, camera.Position.y, camera.Position.z);
+        ImGui::Spacing();
+        // Add option to capture mouse cursor
+        if (ImGui::Button("Capture Mouse (space to free)")) {
+			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		}
+        ImGui::End();
+
+        ImGui::Begin("Terrain Settings");
+        ImGui::SeparatorText("Terrain Settings");
+        ImGui::SetWindowPos(ImVec2(20, 140));
+        ImGui::SetWindowSize(ImVec2(400, 380));
         // Tickbox to enable/disable wireframe mode
         ImGui::Checkbox("Wireframe", &wireframe);
         ImGui::Text("wireframe mode: %s", wireframe ? "on" : "off");
+        // Terrain height slider
+        ImGui::SliderFloat("Terrain Height", &terrainHeight, 0.0f, 1000.0f);
+        // Terrain tessellation settings
+        ImGui::SliderInt("Min Tess Level", &minTess, 1, maxTessLevel);
+        ImGui::SliderInt("Max Tess Level", &maxTess, 1, maxTessLevel);
+        ImGui::SliderFloat("Min Tess Distance", &minDist, 1, 5000);
+        ImGui::SliderFloat("Max Tess Distance", &maxDist, 1, 5000);
+        // Terrain fog distance slider
+        ImGui::SliderFloat("Fog Distance", &fogDist, 1, 10000);
+        // Color edit for the terrain and the sky
+        ImGui::Text("Terrain Colors");
+        ImGui::ColorEdit3("Grass Color", grassColor);
+        ImGui::ColorEdit3("Dry Color", dryColor);
+        ImGui::ColorEdit3("Snow Color", snowColor);
+        ImGui::Text("Sky Color");
+        ImGui::ColorEdit3("Sky Color", skyColor);
+        ImGui::End();
+
+        ImGui::Begin("Generation Settings (Requires rebuild)");
+        // Create this window under the first one
+        ImGui::SetWindowPos(ImVec2(20, 520));
+		ImGui::SetWindowSize(ImVec2(400, 100));
+        // Terrain resolution slider
+        ImGui::SliderInt("Resolution", &terrainResolution, 1, 20);
+        // Terrain frequency slider
+        ImGui::SliderFloat("Frequency", &terrainFrequency, 1.0f, 50.0f);
+        // Button to regenerate the terrain
+        if (ImGui::Button("Regenerate Terrain")) {
+			terrainGeometry = TerrainGenerator::GenerateChunkGeometry(CHUNK_SIZE, CHUNK_SIZE, terrainResolution);
+            for (auto& pair : chunks) {
+				delete pair.second; // Delete the Terrain object pointed to by the second element of the pair
+			}
+			chunks.clear();
+		}
         ImGui::End();
 
         ImGui::Render();
@@ -215,6 +285,7 @@ int main()
     glfwTerminate();
     return 0;
 }
+
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
 // ---------------------------------------------------------------------------------------------------------

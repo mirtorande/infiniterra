@@ -6,17 +6,20 @@
 const unsigned int NUM_PATCH_PTS = 4;
 
 
-Terrain::Terrain(const int xOffset, const int yOffset, const int size, std::vector<float> vertices, unsigned res) :
-    tessHeightMapShader("shaders/terrain.vert", "shaders/terrain.frag", "shaders/terrain.tesc", "shaders/terrain.tese")
+Terrain::Terrain(const int xOffset, const int yOffset, const int size, unsigned res, float freq, std::vector<float> vertices) :
+    terrainShader("shaders/terrain.vert", "shaders/terrain.frag", "shaders/terrain.tesc", "shaders/terrain.tese")
 {
-
     resolution = res;
 
     // NEW GENERATION
-    ComputeShader computeShader("shaders/compute_shader.comp");
+    ComputeShader terrainGenerator("shaders/terrain_generator.comp");
 
-    tessHeightMapShader.use();
-    tessHeightMapShader.setInt("heightMap", 0);
+    terrainShader.use();
+    terrainShader.setInt("heightMap", 0);
+    terrainShader.setFloat("heightFactor", 256.0f);
+    terrainShader.setVec3("grassColor", GRASS_COLOR);
+    terrainShader.setVec3("dryColor", DRY_COLOR);
+    terrainShader.setVec3("snowColor", SNOW_COLOR);
 
     // Generate terrain
 
@@ -34,9 +37,12 @@ Terrain::Terrain(const int xOffset, const int yOffset, const int size, std::vect
     GLCall(glActiveTexture(GL_TEXTURE0));
     GLCall(glBindTexture(GL_TEXTURE_2D, heightsTexture));
 
-    computeShader.use();
-    computeShader.setFloat("xOffset", xOffset);
-    computeShader.setFloat("yOffset", yOffset);
+    terrainGenerator.use();
+    terrainGenerator.setFloat("xOffset", xOffset);
+    terrainGenerator.setFloat("yOffset", yOffset);
+    terrainGenerator.setFloat("size", size);
+    terrainGenerator.setFloat("freq", freq);
+
     GLCall(glDispatchCompute((unsigned int)size / 5, (unsigned int)size / 5, 1));
 
     // make sure writing to image has finished before read
@@ -68,24 +74,41 @@ Terrain::~Terrain() {
     glDeleteVertexArrays(1, &terrainVAO);
     glDeleteBuffers(1, &terrainVBO);
     // Risky(?), keep an eye on this
-    vertices.clear();
+    //vert.clear();
 }
 
 
-void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection, const glm::vec3& cameraPos) {
+void Terrain::Render(const glm::mat4& model, const glm::mat4& view, const glm::mat4& projection,
+    const float height, const glm::vec3& cameraPos,
+    const int minTess, const int maxTess, const float minDist, const float maxDist, const float fogDist,
+    const glm::vec3 grassColor, const glm::vec3 dryColor, const glm::vec3 snowColor, const glm::vec3 skyColor) {
     // be sure to activate shader when setting uniforms/drawing objects
-    tessHeightMapShader.use();
+    terrainShader.use();
 
 
     // view/projection transformations
 
-    tessHeightMapShader.setMat4("projection", projection);
-    tessHeightMapShader.setMat4("view", view);
+    terrainShader.setMat4("projection", projection);
+    terrainShader.setMat4("view", view);
 
     // world transformation
-    tessHeightMapShader.setMat4("model", model);
-    tessHeightMapShader.setVec3("lightPos", glm::vec3(100.0f, 200.0f, 100.0f));
-    tessHeightMapShader.setVec3("camPos", cameraPos);
+    terrainShader.setMat4("model", model);
+    terrainShader.setVec3("lightPos", glm::vec3(100.0f, 200.0f, 100.0f));
+    terrainShader.setVec3("camPos", cameraPos);
+
+    // tessellation control
+    terrainShader.setInt("minTessLevel", minTess);
+    terrainShader.setInt("maxTessLevel", maxTess);
+    terrainShader.setFloat("minDistance", minDist);
+    terrainShader.setFloat("maxDistance", maxDist);
+
+    // other uniforms
+    terrainShader.setFloat("fogDistance", fogDist);
+    terrainShader.setFloat("heightFactor", height);
+    terrainShader.setVec3("grassColor", grassColor);
+    terrainShader.setVec3("dryColor", dryColor);
+    terrainShader.setVec3("snowColor", snowColor);
+    terrainShader.setVec3("skyColor", skyColor);
 
     // render the terrain
     glBindTexture(GL_TEXTURE_2D, heightsTexture);

@@ -156,7 +156,7 @@
     <None Include="local_libs\libs\assimp-vc143-mtd.dll" />
     <None Include="local_libs\libs\assimp-vc143-mtd.exp" />
     <None Include="local_libs\libs\glfw3.dll" />
-    <None Include="shaders\compute_shader.comp" />
+    <None Include="shaders\terrain_generator.comp" />
     <None Include="shaders\screen_quad.frag" />
     <None Include="shaders\screen_quad.vert" />
     <None Include="shaders\skybox.frag" />

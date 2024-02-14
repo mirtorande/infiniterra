@@ -66,7 +66,7 @@
     <None Include="shaders\wireframe.fs" />
     <None Include="shaders\screen_quad.vert" />
     <None Include="shaders\screen_quad.frag" />
-    <None Include="shaders\compute_shader.comp" />
+    <None Include="shaders\terrain_generator.comp" />
     <None Include="shaders\terrain.frag" />
     <None Include="shaders\terrain.tesc" />
     <None Include="shaders\terrain.tese" />

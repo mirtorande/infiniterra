@@ -1,20 +1,20 @@
 #version 410 core
 layout(quads, fractional_even_spacing, ccw) in;
 
+uniform float heightFactor;
 uniform sampler2D heightMap;
 uniform mat4 model;
 uniform mat4 view;
 uniform mat4 projection;
+uniform vec3 grassColor;
+uniform vec3 dryColor;
+uniform vec3 snowColor;
 
 in vec2 TextureCoord[];
 
 out float worldPositionY;
 out vec3 viewPosition;
 out vec3 groundColor;
-
-#define GRASS_COLOR vec3(0.2, 0.3, 0.1)
-#define DRY_COLOR vec3(0.5, 0.4, 0.3)
-#define SNOW_COLOR vec3(1.0, 1.0, 1.0)
 
 float rand(vec2 co) { return fract(sin(dot(co.xy, vec2(0.02, 0.01)))); }
 
@@ -33,7 +33,6 @@ void main()
     vec2 texCoord = (t1 - t0) * v + t0;
 
     // Sample height map using adjusted texture coordinates
-    float heightFactor = 256.0;
     float textureValue = texture(heightMap, texCoord).x;
     float height = textureValue * heightFactor - heightFactor/4;
 
@@ -58,8 +57,8 @@ void main()
     float snowHeight = 30.0 - textureValue * 100;
 
     //Mix between the three different ground colors based on height, normalizing
-    groundColor = mix(GRASS_COLOR, DRY_COLOR, clamp((height - grassHeight)/30, 0, 1));
-    groundColor = mix(groundColor, SNOW_COLOR, clamp((height - snowHeight)/30, 0, 1));
+    groundColor = mix(grassColor, dryColor, clamp((height - grassHeight)/30, 0, 1));
+    groundColor = mix(groundColor, snowColor, clamp((height - snowHeight)/30, 0, 1));
 
 
 }

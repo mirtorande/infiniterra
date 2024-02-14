@@ -9,11 +9,11 @@ out vec4 FragColor;
 uniform mat4 view;
 uniform vec3 lightPos;
 uniform vec3 camPos;
-
-#define SKY_COLOR vec3(0.6, 0.6, 0.7)
+uniform float fogDistance;
+uniform vec3 skyColor;
 
 float anisotropicFog() {
-	float fog = (0.1f-viewPosition.z)/(5000.0 -0.1);
+	float fog = (0.1 - viewPosition.z)/(fogDistance - 0.1);
     //float eyePosY = (inverse(view) * vec4(0.0, 0.0, 0.0, 1.0)).y;
     //const float fogHeight = 10.0;
     //float percentInside = fogHeight / (eyePosY - worldPositionY);
@@ -24,14 +24,13 @@ float anisotropicFog() {
 void main()
 {
     // Light is sun color
-    vec3 lightColor = vec3(1.0, 0.9, 0.9);
+    vec3 lightColor = vec3(1.0, 1.0, 1.0);
     // ambient
-    float ambientStrength = 0.2;
+    float ambientStrength = 0.4;
     vec3 ambient = ambientStrength * lightColor;
   	
     // diffuse 
     float fog = anisotropicFog();
-
 
     vec3 norm = normalize(cross(dFdx(viewPosition), dFdy(viewPosition)));
 
@@ -49,5 +48,5 @@ void main()
 
 
     vec3 result = (diff + specular) * groundColor;
-    FragColor.rgb = mix(result, SKY_COLOR, fog);
+    FragColor.rgb = mix(result, skyColor, fog);
 }
