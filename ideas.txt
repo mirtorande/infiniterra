@@ -1,1 +1,0 @@
-Triplanar texturing: https://gist.github.com/patriciogonzalezvivo/20263fe85d52705e4530

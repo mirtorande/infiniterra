@@ -128,7 +128,18 @@ int main()
     static float dryColor[3] = { 0.5f, 0.4f, 0.3f };
     static float snowColor[3] = { 1.0f, 1.0f, 1.0f };
     static float skyColor[3] = { 0.6f, 0.6f, 0.7f };
+    
+    #define NAV_SETTINGS_HEIGHT 120
+    #define TER_SETTINGS_HEIGHT 360
+    #define GEN_SETTINGS_HEIGHT 100
+    #define CLOSED_SETTINGS_HEIGHT 20
+    #define SETTINGS_WIDTH 400
+    #define SETTINGS_X 20
+    #define SETTINGS_Y 20
+    #define SETTINGS_SPACING 5
 
+    static bool navSettingsCollapsed = false;
+    static bool terSettingsCollapsed = false;
 
     // render loop
     // -----------
@@ -200,8 +211,8 @@ int main()
         }
 
         ImGui::Begin("Navigation Settings");
-        ImGui::SetWindowPos(ImVec2(20, 20));
-        ImGui::SetWindowSize(ImVec2(400, 120));
+        ImGui::SetWindowPos(ImVec2(SETTINGS_X, SETTINGS_Y));
+        ImGui::SetWindowSize(ImVec2(SETTINGS_WIDTH, NAV_SETTINGS_HEIGHT));
         ImGui::Text("FPS: %.2f", 1.0f / deltaTime);
         // Add some space
         ImGui::Spacing();
@@ -212,15 +223,20 @@ int main()
         if (ImGui::Button("Capture Mouse (space to free)")) {
 			glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
+        // React to window collapsing
+        navSettingsCollapsed = ImGui::IsWindowCollapsed();
         ImGui::End();
 
         ImGui::Begin("Terrain Settings");
-        ImGui::SeparatorText("Terrain Settings");
-        ImGui::SetWindowPos(ImVec2(20, 140));
-        ImGui::SetWindowSize(ImVec2(400, 380));
+        //make it so that this window cannot be dragged
+        int terSettingsY = SETTINGS_Y + NAV_SETTINGS_HEIGHT * !navSettingsCollapsed + CLOSED_SETTINGS_HEIGHT * navSettingsCollapsed + SETTINGS_SPACING;
+        ImGui::SetWindowPos(ImVec2(SETTINGS_X, terSettingsY));
+        ImGui::SetWindowSize(ImVec2(SETTINGS_WIDTH, TER_SETTINGS_HEIGHT));
         // Tickbox to enable/disable wireframe mode
-        ImGui::Checkbox("Wireframe", &wireframe);
-        ImGui::Text("wireframe mode: %s", wireframe ? "on" : "off");
+        ImGui::Checkbox(" Wireframe view:", &wireframe);
+        ImGui::SameLine();
+        ImGui::Text("%s", wireframe ? "on" : "off");
+        ImGui::Spacing();
         // Terrain height slider
         ImGui::SliderFloat("Terrain Height", &terrainHeight, 0.0f, 1000.0f);
         // Terrain tessellation settings
@@ -237,12 +253,15 @@ int main()
         ImGui::ColorEdit3("Snow Color", snowColor);
         ImGui::Text("Sky Color");
         ImGui::ColorEdit3("Sky Color", skyColor);
+        // React to window collapsing
+        terSettingsCollapsed = ImGui::IsWindowCollapsed();
         ImGui::End();
 
         ImGui::Begin("Generation Settings (Requires rebuild)");
-        // Create this window under the first one
-        ImGui::SetWindowPos(ImVec2(20, 520));
-		ImGui::SetWindowSize(ImVec2(400, 100));
+        // Create this window under the first two
+        int genSettingsY = SETTINGS_Y + SETTINGS_SPACING + NAV_SETTINGS_HEIGHT * !navSettingsCollapsed + CLOSED_SETTINGS_HEIGHT * navSettingsCollapsed + SETTINGS_SPACING + TER_SETTINGS_HEIGHT * !terSettingsCollapsed + CLOSED_SETTINGS_HEIGHT * terSettingsCollapsed;
+        ImGui::SetWindowPos(ImVec2(SETTINGS_X, genSettingsY));
+		ImGui::SetWindowSize(ImVec2(SETTINGS_WIDTH, GEN_SETTINGS_HEIGHT));
         // Terrain resolution slider
         ImGui::SliderInt("Resolution", &terrainResolution, 1, 20);
         // Terrain frequency slider
@@ -285,6 +304,8 @@ int main()
     glfwTerminate();
     return 0;
 }
+
+
 
 
 // process all input: query GLFW whether relevant keys are pressed/released this frame and react accordingly
