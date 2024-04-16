@@ -90,8 +90,7 @@ set(PROJECT_NAME terrain-lod)
 # Source groups
 ################################################################################
 set(no_group_source_files
-    "local_libs/libs/assimp-vc143-mtd.dll"
-    "local_libs/libs/assimp-vc143-mtd.exp"
+
     "local_libs/libs/glfw3.dll"
     "shaders/screen_quad.frag"
     "shaders/screen_quad.vert"
@@ -282,7 +281,6 @@ if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
             "user32;"
             "gdi32;"
             "shell32;"
-            "assimp-vc143-mtd"
         ">"
     )
 endif()

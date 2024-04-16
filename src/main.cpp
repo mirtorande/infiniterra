@@ -377,7 +377,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
     lastX = xpos;
     lastY = ypos;
 
-    camera.ProcessMouseMovement(xoffset, yoffset);
+    int mode = glfwGetInputMode(window, GLFW_CURSOR);
+
+    // Check if the mode is as expected
+    if(mode == GLFW_CURSOR_DISABLED)
+        camera.ProcessMouseMovement(xoffset, yoffset);
 }
 
 // glfw: whenever the mouse scroll wheel scrolls, this callback is called
