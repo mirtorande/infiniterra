@@ -1,18 +1,17 @@
 #include "terrain.h"
 
 #include <compute_shader.h>
-#include "GLErrors.h"
 
 const unsigned int NUM_PATCH_PTS = 4;
 
 
 Terrain::Terrain(const int xOffset, const int yOffset, const int size, unsigned res, float freq, std::vector<float> vertices) :
-    terrainShader("shaders/terrain.vert", "shaders/terrain.frag", "shaders/terrain.tesc", "shaders/terrain.tese")
+    terrainShader("../shaders/terrain.vert", "../shaders/terrain.frag", "../shaders/terrain.tesc", "../shaders/terrain.tese")
 {
     resolution = res;
 
     // NEW GENERATION
-    ComputeShader terrainGenerator("shaders/terrain_generator.comp");
+    ComputeShader terrainGenerator("../shaders/terrain_generator.comp");
 
     terrainShader.use();
     terrainShader.setInt("heightMap", 0);
@@ -23,19 +22,19 @@ Terrain::Terrain(const int xOffset, const int yOffset, const int size, unsigned 
 
     // Generate terrain
 
-    GLCall(glGenTextures(1, &heightsTexture));
-    GLCall(glActiveTexture(GL_TEXTURE0));
-    GLCall(glBindTexture(GL_TEXTURE_2D, heightsTexture));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR));
-    GLCall(glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR));
-    GLCall(glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, size, size, 0, GL_RED, GL_FLOAT, NULL));
+    glGenTextures(1, &heightsTexture);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, heightsTexture);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_R32F, size, size, 0, GL_RED, GL_FLOAT, NULL);
     
-    GLCall(glBindImageTexture(0, heightsTexture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F));
+    glBindImageTexture(0, heightsTexture, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
 
-    GLCall(glActiveTexture(GL_TEXTURE0));
-    GLCall(glBindTexture(GL_TEXTURE_2D, heightsTexture));
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, heightsTexture);
 
     terrainGenerator.use();
     terrainGenerator.setFloat("xOffset", xOffset);
@@ -43,13 +42,13 @@ Terrain::Terrain(const int xOffset, const int yOffset, const int size, unsigned 
     terrainGenerator.setFloat("size", size);
     terrainGenerator.setFloat("freq", freq);
 
-    GLCall(glDispatchCompute((unsigned int)size / 5, (unsigned int)size / 5, 1));
+    glDispatchCompute((unsigned int)size / 5, (unsigned int)size / 5, 1);
 
     // make sure writing to image has finished before read
-    GLCall(glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT));
+    glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
     
-    GLCall(glBindTexture(GL_TEXTURE_2D, 0)); // unbind texture when done so we won't accidentily mess up our texture.
-    GLCall(glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F));
+    glBindTexture(GL_TEXTURE_2D, 0); // unbind texture when done so we won't accidentily mess up our texture.
+    glBindImageTexture(0, 0, 0, GL_FALSE, 0, GL_READ_WRITE, GL_R32F);
 
     // configure the cube's VAO (and terrainVBO)
     glGenVertexArrays(1, &terrainVAO);
