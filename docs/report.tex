@@ -78,16 +78,38 @@ Commonly used techniques for terrain generation include heightmap generation, fr
 These techniques use mathematical functions to generate terrain data that can be used to displace the vertices of a grid to create a 3D terrain.
 In InfiniTerra, we use a heightmap generation technique based on ridged Perlin noise to create the terrain.
 % Perlin noise
+\section*{Perlin Noise}
 Perlin noise is a type of gradient noise developed by Ken Perlin in 1983. It is commonly used in computer graphics to create natural-looking textures and terrains.
 Interestingly it's first use was in the movie Tron (1982) to create the light cycle effects.
 % CPU implementation
+\subsection*{CPU Implementation}
 In the first version of the system, the heightmap generation was implemented on the CPU by using the FastNoiseLite library.
 This allowed access to a wide variety of noise functions, such as Perlin, Simplex, and Cellular noise, but was not performant enough for generating large terrains.
 The generation of a 1024x1024 heightmap took around 5s on a modern CPU, which was too slow for real-time applications.
 % GPU implementation (compute shaders)
+\subsection*{GPU Implementation}
 To improve performance, the heightmap generation was moved to the GPU by using compute shaders.
 
-\subsection*{Compute shaders}
+\section*{Compute shaders}
+% Introduce the pipeline and shader stages
+In modern graphics programming, the rendering pipeline is divided into several stages, each of which is implemented using a different type of shader.
+
+\begin{figure}[h!]
+  \centering
+  \includegraphics[width=0.75\textwidth]{img/compute_shaders.jpg}
+  \caption{The graphics rendering pipeline.}
+  \label{fig:pipeline}
+\end{figure}
+
+A Compute Shader is a shader stage that is used entirely for computing arbitrary information. While it can do rendering, it is generally used for tasks not directly related to drawing triangles and pixels.
+It is used to perform general-purpose computing tasks on the GPU, such as physics simulations, image processing, and data processing.
+The compute shader is executed in parallel by multiple threads, which allows it to perform computations much faster than the CPU.
+Compute shaders are not part of the regular rendering pipeline. So when executing a Drawing Command, the compute shader linked into the current program or pipeline is not involved. Instead, you must explicitly dispatch a compute shader to run on the GPU.
+Compute shaders operate in an abstracted space called a dispatch grid, which is a 3D grid of thread groups. We call these groups \textit{work groups}.
+When the system actually computes the work groups, it can do so in any order. So if it is given a work group set of (3, 1, 2), it could execute group (0, 0, 0) first, then skip to group (1, 0, 1), then jump to (2, 0, 0), etc. So your compute shader should not rely on the order in which individual groups are processed.
+A single work group is not the same thing as a single compute shader invocation; there's a reason why it is called a \textit{group}. Within a single work group, there may be many compute shader invocations. How many is defined by the compute shader itself, not by the call that executes it. This is known as the local size of the work group. 
+Each thread group contains multiple threads, which can communicate with each other using shared memory. This allows the compute shader to perform complex computations that require synchronization between threads.
+A compute shader doesn't have access to the same inputs and outputs as other shader stages, but it can read and write to buffers and textures, which allows it to perform a wide variety of computations.
 
 \chapter{Rendering the terrain}
 \label{ch:rendering-the-terrain}
@@ -96,8 +118,22 @@ To improve performance, the heightmap generation was moved to the GPU by using c
 \section{Phong Lighting}
 % Phong lighting theory
 Phong lighting is a shading model developed by Bui Tuong Phong in 1975. It is a local illumination model that approximates the way light interacts with a surface by using three components: ambient, diffuse, and specular.
+The ambient component represents the light that is scattered in all directions and is reflected equally by all surfaces.
+The diffuse component represents the light that is scattered in all directions but is reflected more in the direction of the light source.
+The specular component represents the light that is reflected in a specific direction, which is determined by the angle between the light source and the viewer.
+% Phong lighting implementation
+
 % Chunking and culling
+\section*{Chunking and Culling}
 % LOD (tessellation)
+\section*{Level of Detail (LOD)}
+Level of Detail (LOD) is a technique used in computer graphics to optimize the rendering of complex 3D models by reducing the level of detail based on the distance from the camera.
+This allows the rendering engine to display high-quality models when they are close to the camera and switch to lower-quality models when they are far away.
+In InfiniTerra, we use an LOD system based on tessellation to dynamically adjust the level of detail of the terrain based on the distance from the camera.
+This is done by subdividing the terrain into smaller patches and increasing the level of tessellation as the camera gets closer to the terrain.
+This affords us multi-resolution control over every chunk of terrain, allowing the same mesh to be rendered with different levels of detail depending on the distance from the camera.
+\section*{Tessellation}
+Tessellation is the Vertex Processing stage in the OpenGL rendering pipeline where patches of vertex data are subdivided into smaller Primitives. This process is governed by two shader stages and a fixed-function stage. 
 \lipsum[3-4]
 
 % Conclusion
