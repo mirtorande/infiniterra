@@ -92,9 +92,38 @@ functions to generate terrain data that can be used to displace the vertices of 
 create the terrain.
 % Perlin noise
 \section{Perlin Noise}
-Perlin noise is a type of gradient noise developed by Ken Perlin in 1983.
-It is commonly used in computer graphics to create natural-looking textures and terrains.
-Interestingly it's first use was in the movie Tron (1982) to create the light cycle effects.
+Perlin noise is a type of gradient noise developed by Ken Perlin in 1983. It is commonly used in
+computer graphics to create natural-looking textures and terrains. Interestingly it's first use was
+in the movie Tron (1982) to create the light cycle effects.
+
+\begin{figure}[h!]
+	\centering
+	\begin{subfigure}[h]{0.35\textwidth}
+		\includegraphics[width=\textwidth]{img/perlin_noise.png}
+		\caption{Perlin noise.}
+		\label{fig:pnoise}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[h]{0.55\textwidth}
+		\includegraphics[width=\textwidth]{img/perlin_terrain.png}
+		\caption{Perlin noise used to displace the vertices of a grid.}
+		\label{fig:pterrain}
+	\end{subfigure}
+\end{figure}
+
+Perlin noise is computed by generating a grid and for each point of the grid, a random gradient vector.
+The value of the noise in each point is then computed by calculating the dot product between the gradient vectors and the distance vectors from the point to the four corners of the grid cell.
+The noise value is then interpolated to create a smooth transition between the points.
+
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.55\textwidth]{img/perlin.png}
+	\caption{The vectors involved in the computation of Perlin noise.}
+	\label{fig:perlin_vectors}
+\end{figure}
+
+% Ridged Perlin noise?
+
 % CPU implementation
 \subsection{CPU Implementation}
 In the first version of the system, the heightmap generation was implemented on the CPU by using
@@ -140,6 +169,13 @@ compute shader doesn't have access to the same inputs and outputs as other shade
 can read and write to buffers and textures, which allows it to perform a wide variety of
 computations.
 
+\begin{figure}[h!]
+	\centering
+	\includegraphics[width=0.75\textwidth]{img/work_groups.png}
+	\caption{work groups split in their local space invocations, represented by the red cubes.}
+	\label{fig:work_groups}
+\end{figure}
+
 \chapter{Rendering the terrain}
 \label{ch:rendering-the-terrain}
 % Base geometry (triangles) Phong Lighting
@@ -156,32 +192,28 @@ determined by the angle between the light source and the viewer.
 % Phong lighting implementation
 
 \section{Implementation}
-Phong lighting is computed using the following formula:
-$$
-I = k_a \cdot I_a + k_d \cdot I_d \cdot (\hat{L} \cdot \hat{N}) + k_s \cdot I_s \cdot (\hat{R} \cdot \hat{V})^n
-$$
-where:
+Phong lighting is computed using the following formula: $$ I = k_a \cdot I_a + k_d \cdot I_d \cdot
+	(\hat{L} \cdot \hat{N}) + k_s \cdot I_s \cdot (\hat{R} \cdot \hat{V})^n $$ where:
 \begin{itemize}
-  \item $I$ is the intensity of the light at the surface point.
-  \item $k_a$ is the ambient reflection coefficient.
-  \item $I_a$ is the intensity of the ambient light.
-  \item $k_d$ is the diffuse reflection coefficient.
-  \item $I_d$ is the intensity of the diffuse light.
-  \item $\hat{L}$ is the unit vector pointing from the surface point to the light source.
-  \item $\hat{N}$ is the unit normal vector at the surface point.
-  \item $k_s$ is the specular reflection coefficient.
-  \item $I_s$ is the intensity of the specular light.
-  \item $\hat{R}$ is the unit vector pointing in the direction of the reflected light.
-  \item $\hat{V}$ is the unit vector pointing from the surface point to the viewer.
-  \item $n$ is the shininess coefficient.
+	\item $I$ is the intensity of the light at the surface point.
+	\item $k_a$ is the ambient reflection coefficient.
+	\item $I_a$ is the intensity of the ambient light.
+	\item $k_d$ is the diffuse reflection coefficient.
+	\item $I_d$ is the intensity of the diffuse light.
+	\item $\hat{L}$ is the unit vector pointing from the surface point to the light source.
+	\item $\hat{N}$ is the unit normal vector at the surface point.
+	\item $k_s$ is the specular reflection coefficient.
+	\item $I_s$ is the intensity of the specular light.
+	\item $\hat{R}$ is the unit vector pointing in the direction of the reflected light.
+	\item $\hat{V}$ is the unit vector pointing from the surface point to the viewer.
+	\item $n$ is the shininess coefficient.
 \end{itemize}
-%fog
+% fog
 
 % Chunking and culling
 \section{Chunking}
 The terrain is divided into chunks, which are smaller pieces of terrain that can be rendered
 independently. This allows the rendering engine to cull chunks that are not visible to the camera
-
 
 \section{Culling}
 
@@ -191,7 +223,6 @@ independently. This allows the rendering engine to cull chunks that are not visi
 	\caption{The procedurally generated world map of the game Elder Scrolls II: Daggerfall.}
 	\label{fig:frustum}
 \end{figure}
-
 
 \section{Level of Detail (LOD)}
 
@@ -207,38 +238,36 @@ depending on the distance from the camera.
 
 \section{Tessellation}
 
-Tessellation is the Vertex
-Processing stage in the OpenGL rendering pipeline where patches of vertex data are subdivided into
-smaller Primitives. This process is governed by two shader stages and a fixed-function stage.
-The tessellation process is divided into three stages which form an optional part of Vertex
-Processing in the rendering pipeline. Two of the stages are programmable; between them is a fixed 
-function stage. The Tessellation Control Shader (TCS) determines how much tessellation to do.
-Therefore, the TCS is primarily responsible for ensuring continuity across patches.
-So if you have two adjacent patches that need to have different levels of tessellation, the TCS 
-invocations for the different patches need to use their tessellation controls to ensure that the 
-shared edge(s) between the patches use the same level of tessellation. Without this protection, 
-gaps and breaks in what are supposed to be contiguous patches can occur.
-The TCS is optional; default tessellation values can be used if no TCS is provided.
-The tessellation primitive generator takes the input patch and subdivides it based on values
-computed by the TCS or provided as defaults.
-The Tessellation Evaluation Shader (TES) takes the tessellated patch and computes the vertex 
-values for each generated vertex. 
+Tessellation is the Vertex Processing stage in the OpenGL rendering pipeline where patches of
+vertex data are subdivided into smaller Primitives. This process is governed by two shader stages
+and a fixed-function stage. The tessellation process is divided into three stages which form an
+optional part of Vertex Processing in the rendering pipeline. Two of the stages are programmable;
+between them is a fixed function stage. The Tessellation Control Shader (TCS) determines how much
+tessellation to do. Therefore, the TCS is primarily responsible for ensuring continuity across
+patches. So if you have two adjacent patches that need to have different levels of tessellation,
+the TCS invocations for the different patches need to use their tessellation controls to ensure
+that the shared edge(s) between the patches use the same level of tessellation. Without this
+protection, gaps and breaks in what are supposed to be contiguous patches can occur. The TCS is
+optional; default tessellation values can be used if no TCS is provided. The tessellation primitive
+generator takes the input patch and subdivides it based on values computed by the TCS or provided
+as defaults. The Tessellation Evaluation Shader (TES) takes the tessellated patch and computes the
+vertex values for each generated vertex.
 
 \begin{figure}[h!]
-  \centering
-  \begin{subfigure}[h]{0.45\textwidth}
-    \includegraphics[width=\textwidth]{img/triangle-patch.png}
-    \caption{Caption for Figure 1}
-    \label{fig:figure1}
-  \end{subfigure}
-  \hfill
-  \begin{subfigure}[h]{0.45\textwidth}
-    \includegraphics[width=\textwidth]{img/quad-patch.png}
-    \caption{Caption for Figure 2}
-    \label{fig:figure2}
-  \end{subfigure}
-  \caption{Caption for the whole figure}
-  \label{fig:both_figures}
+	\centering
+	\begin{subfigure}[h]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{img/triangle-patch.png}
+		\caption{Caption for Figure 1}
+		\label{fig:figure1}
+	\end{subfigure}
+	\hfill
+	\begin{subfigure}[h]{0.45\textwidth}
+		\includegraphics[width=\textwidth]{img/quad-patch.png}
+		\caption{Caption for Figure 2}
+		\label{fig:figure2}
+	\end{subfigure}
+	\caption{Caption for the whole figure}
+	\label{fig:both_figures}
 \end{figure}
 
 % Conclusion
