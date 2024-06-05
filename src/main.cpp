@@ -67,6 +67,7 @@ int main()
     // glfw window creation
     // --------------------
     GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "InfiniTerra by Mirto", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "InfiniTerra by Mirto", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -140,6 +141,8 @@ int main()
 
     static bool navSettingsCollapsed = false;
     static bool terSettingsCollapsed = false;
+    static float fps[100];
+    static int fpsIndex = 0;
     static float fps[100];
     static int fpsIndex = 0;
 
