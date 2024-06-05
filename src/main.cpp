@@ -66,7 +66,7 @@ int main()
 
     // glfw window creation
     // --------------------
-    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "Infinite Terrain by Mirto", NULL, NULL);
+    GLFWwindow* window = glfwCreateWindow(SCR_WIDTH, SCR_HEIGHT, "InfiniTerra by Mirto", NULL, NULL);
     if (window == NULL)
     {
         std::cout << "Failed to create GLFW window" << std::endl;
@@ -140,6 +140,8 @@ int main()
 
     static bool navSettingsCollapsed = false;
     static bool terSettingsCollapsed = false;
+    static float fps[100];
+    static int fpsIndex = 0;
 
     // render loop
     // -----------
@@ -214,6 +216,11 @@ int main()
         ImGui::SetWindowPos(ImVec2(SETTINGS_X, SETTINGS_Y));
         ImGui::SetWindowSize(ImVec2(SETTINGS_WIDTH, NAV_SETTINGS_HEIGHT));
         ImGui::Text("FPS: %.2f", 1.0f / deltaTime);
+        //compute and display average FPS
+        
+        fps[fpsIndex] = 1.0f / deltaTime;
+        fpsIndex = (fpsIndex + 1) % 100;
+        float avgFps = 0.0f;
         // Add some space
         ImGui::Spacing();
         // Add text to display the camera position shortened to 2 decimal places

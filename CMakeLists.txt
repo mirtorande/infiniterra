@@ -276,11 +276,8 @@ endif()
 if("${CMAKE_VS_PLATFORM_NAME}" STREQUAL "x64")
     set(ADDITIONAL_LIBRARY_DEPENDENCIES
         "$<$<CONFIG:Debug>:"
-            "opengl32;"
-            "glfw3;"
-            "user32;"
-            "gdi32;"
-            "shell32;"
+            "GL;"
+            "glfw;"
         ">"
     )
 endif()

@@ -35,7 +35,7 @@ public:
         }
     }
     // Copy Operator
-    operator Terrain&() = delete;
+    Terrain& operator=(const Terrain&) = delete;
     // Move Operator
     Terrain& operator=(Terrain&& o) noexcept {
         if (this != &o) {
