@@ -4,16 +4,9 @@ Continuous LOD for procedurally generated terrains project for Real Time Graphic
 <img src="https://github.com/user-attachments/assets/7b99a949-4ae4-48e8-91ca-324dbe165673" alt="mountain" width="400"/>
 
 ## Table of Contents
-- [Introduction](#introduction)
 - [Features](#features)
 - [Installation](#installation)
-- [Usage](#usage)
-- [Screenshot](#screenshot)
-- [Contributing](#contributing)
 - [License](#license)
-
-## Introduction
-InfiniteTerra is a project aimed at creating procedurally generated terrains with continuous Level of Detail (LOD). This project is part of the Real Time Graphics programming exam at UniMi.
 
 ## Features
 - Procedural terrain generation
